@@ -1,7 +1,6 @@
 import 'package:clipnote/SideMenuBar.dart';
 import 'package:clipnote/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:clipnote/SideMenuBar.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -12,6 +11,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,13 +44,14 @@ class _HomeState extends State<Home> {
                     Row(
                       children: [
                         IconButton(
-                            onPressed: () {
-                              _drawerKey.currentState!.openDrawer();
-                            },
-                            icon: Icon(
-                              Icons.menu,
-                              color: white,
-                            )),
+                          onPressed: () {
+                            _drawerKey.currentState!.openDrawer();
+                          },
+                          icon: Icon(
+                            Icons.menu,
+                            color: white,
+                          ),
+                        ),
                         SizedBox(width: 16),
                         Container(
                           height: 55,
@@ -63,12 +64,13 @@ class _HomeState extends State<Home> {
                               Text(
                                 "Search your notes",
                                 style: TextStyle(
-                                    color: white.withOpacity(0.5),
-                                    fontSize: 16),
-                              )
+                                  color: white.withOpacity(0.5),
+                                  fontSize: 16,
+                                ),
+                              ),
                             ],
                           ),
-                        )
+                        ),
                       ],
                     ),
                     Row(
@@ -80,24 +82,45 @@ class _HomeState extends State<Home> {
                             color: white,
                           ),
                           style: ButtonStyle(
-                              overlayColor: MaterialStateColor.resolveWith(
-                                  (states) => white.withOpacity(0.1)),
-                              shape: MaterialStateProperty.all<
-                                      RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
+                            overlayColor: MaterialStateColor.resolveWith(
+                                  (states) => white.withOpacity(0.1),
+                            ),
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(50.0),
-                              ))),
+                              ),
+                            ),
+                          ),
                         ),
                         SizedBox(width: 9),
                         CircleAvatar(
                           radius: 16,
                           backgroundColor: Colors.orange,
-                        )
+                        ),
                       ],
                     ),
                   ],
                 ),
-              )
+              ),
+              Container(
+                alignment: Alignment.centerLeft, // Ensure text is aligned to the left
+                padding: EdgeInsets.symmetric(horizontal: 10), // Optional padding
+                margin: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "ALL",
+                      style: TextStyle(
+                        color: white.withOpacity(0.5),
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
