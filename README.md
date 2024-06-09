@@ -1,4 +1,4 @@
-# clipnote
+# clipnote(Under Development phase)
 
 Google Keep notes clone app on Flutter.
 
