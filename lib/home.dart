@@ -1,6 +1,8 @@
 import 'package:clipnote/SideMenuBar.dart';
 import 'package:clipnote/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:flutter_lorem/flutter_lorem.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -10,7 +12,9 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
+  String note = lorem(paragraphs: 1, words: 9);
+  String note1 = lorem(paragraphs: 1, words: 50);
+  final GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +24,7 @@ class _HomeState extends State<Home> {
       drawer: SideMenu(),
       backgroundColor: bgColor,
       body: SafeArea(
-        child: Container(
+        child: SingleChildScrollView(
           child: Column(
             children: [
               Container(
@@ -29,7 +33,7 @@ class _HomeState extends State<Home> {
                 height: 55,
                 decoration: BoxDecoration(
                   color: cardColor,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(15),
                   boxShadow: [
                     BoxShadow(
                       color: black.withOpacity(0.2),
@@ -56,7 +60,6 @@ class _HomeState extends State<Home> {
                         Container(
                           height: 55,
                           width: 200,
-                          decoration: BoxDecoration(),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,7 +86,7 @@ class _HomeState extends State<Home> {
                           ),
                           style: ButtonStyle(
                             overlayColor: MaterialStateColor.resolveWith(
-                                  (states) => white.withOpacity(0.1),
+                              (states) => white.withOpacity(0.1),
                             ),
                             shape: MaterialStateProperty.all<
                                 RoundedRectangleBorder>(
@@ -104,22 +107,109 @@ class _HomeState extends State<Home> {
                 ),
               ),
               Container(
-                alignment: Alignment.centerLeft, // Ensure text is aligned to the left
-                padding: EdgeInsets.symmetric(horizontal: 10), // Optional padding
+                alignment: Alignment.centerLeft,
+                padding: EdgeInsets.symmetric(horizontal: 10),
                 margin: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "ALL",
-                      style: TextStyle(
-                        color: white.withOpacity(0.5),
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
+                child: Text(
+                  "ALL",
+                  style: TextStyle(
+                    color: white.withOpacity(0.5),
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
+              ),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                child: MasonryGridView.count(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 12,
+                  crossAxisSpacing: 12,
+                  itemCount: 5,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: cardColor,
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            spreadRadius: 1,
+                            blurRadius: 3,
+                          ),
+                        ],
+                      ),
+                      padding: const EdgeInsets.all(10.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "HEADING",
+                            style: TextStyle(
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          SizedBox(height: 10.0),
+                          Text(
+                            !index.isEven ? note : note1,
+                            style: TextStyle(
+                              fontSize: 14.0,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+              ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: 5,
+                itemBuilder: (context, index) {
+                  return Container(
+                    margin: EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(10.0),
+                    decoration: BoxDecoration(
+                      color:  Color(0xFF34A853),
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          spreadRadius: 1,
+                          blurRadius: 3,
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "HEADING",
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        SizedBox(height: 10.0),
+                        Text(
+                          !index.isEven ? note : note1,
+                          style: TextStyle(
+                            fontSize: 14.0,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
               ),
             ],
           ),
