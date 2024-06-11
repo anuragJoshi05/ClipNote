@@ -6,14 +6,14 @@ import 'package:flutter_lorem/flutter_lorem.dart';
 import 'package:clipnote/noteView.dart';
 import 'package:clipnote/createNoteView.dart';
 
-class Home extends StatefulWidget {
-  const Home({super.key});
+class ArchieveView extends StatefulWidget {
+  const ArchieveView({super.key});
 
   @override
-  State<Home> createState() => _HomeState();
+  State<ArchieveView> createState() => _ArchieveViewState();
 }
 
-class _HomeState extends State<Home> {
+class _ArchieveViewState extends State<ArchieveView> {
   String note = lorem(paragraphs: 1, words: 9);
   String note1 = lorem(paragraphs: 1, words: 50);
   final GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
@@ -28,7 +28,7 @@ class _HomeState extends State<Home> {
               MaterialPageRoute(builder: (context) => CreateNoteview()));
         },
         backgroundColor: cardColor,
-        child: Icon(
+        child:Icon(
           Icons.add,
           color: white,
           size: 36,
@@ -101,7 +101,7 @@ class _HomeState extends State<Home> {
                           ),
                           style: ButtonStyle(
                             overlayColor: MaterialStateColor.resolveWith(
-                              (states) => white.withOpacity(0.1),
+                                  (states) => white.withOpacity(0.1),
                             ),
                             shape: MaterialStateProperty.all<
                                 RoundedRectangleBorder>(
@@ -136,7 +136,7 @@ class _HomeState extends State<Home> {
               ),
               Container(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
                 child: MasonryGridView.count(
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,

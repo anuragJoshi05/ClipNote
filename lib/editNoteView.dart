@@ -32,7 +32,8 @@ class _EditnoteviewState extends State<Editnoteview> {
           children: [
             TextField(
               cursorColor: white,
-              style: TextStyle(fontSize: 25, color: white, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  fontSize: 25, color: white, fontWeight: FontWeight.bold),
               decoration: InputDecoration(
                   border: InputBorder.none,
                   focusedBorder: InputBorder.none,

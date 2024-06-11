@@ -34,7 +34,8 @@ class _NoteViewState extends State<NoteView> {
           ),
           IconButton(
             onPressed: () {
-              Navigator.push(context,MaterialPageRoute(builder: (context)=> Editnoteview()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => Editnoteview()));
             },
             icon: Icon(Icons.edit_outlined),
             splashRadius: 18,
@@ -42,7 +43,7 @@ class _NoteViewState extends State<NoteView> {
           ),
         ],
       ),
-      body : Container(
+      body: Container(
         padding: EdgeInsets.all(10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
