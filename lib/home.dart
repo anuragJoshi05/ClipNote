@@ -3,6 +3,7 @@ import 'package:clipnote/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_lorem/flutter_lorem.dart';
+import 'package:clipnote/noteView.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -130,39 +131,44 @@ class _HomeState extends State<Home> {
                   crossAxisSpacing: 12,
                   itemCount: 5,
                   itemBuilder: (context, index) {
-                    return Container(
-                      decoration: BoxDecoration(
-                        color: cardColor,
-                        borderRadius: BorderRadius.circular(8),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            spreadRadius: 1,
-                            blurRadius: 3,
-                          ),
-                        ],
-                      ),
-                      padding: const EdgeInsets.all(10.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "HEADING",
-                            style: TextStyle(
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                    return InkWell(
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => NoteView()));
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: cardColor,
+                          borderRadius: BorderRadius.circular(8),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              spreadRadius: 1,
+                              blurRadius: 3,
                             ),
-                          ),
-                          SizedBox(height: 10.0),
-                          Text(
-                            !index.isEven ? note : note1,
-                            style: TextStyle(
-                              fontSize: 14.0,
-                              color: Colors.white,
+                          ],
+                        ),
+                        padding: const EdgeInsets.all(10.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "HEADING",
+                              style: TextStyle(
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
                             ),
-                          ),
-                        ],
+                            SizedBox(height: 10.0),
+                            Text(
+                              !index.isEven ? note : note1,
+                              style: TextStyle(
+                                fontSize: 14.0,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   },
@@ -177,7 +183,7 @@ class _HomeState extends State<Home> {
                     margin: EdgeInsets.all(10),
                     padding: const EdgeInsets.all(10.0),
                     decoration: BoxDecoration(
-                      color:  Color(0xFF34A853),
+                      color: Color(0xFF34A853),
                       borderRadius: BorderRadius.circular(8),
                       boxShadow: [
                         BoxShadow(
