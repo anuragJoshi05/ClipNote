@@ -1,4 +1,5 @@
 import 'package:clipnote/colors.dart';
+import 'package:clipnote/editNoteView.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lorem/flutter_lorem.dart';
 
@@ -32,7 +33,9 @@ class _NoteViewState extends State<NoteView> {
             color: white,
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(context,MaterialPageRoute(builder: (context)=> Editnoteview()));
+            },
             icon: Icon(Icons.edit_outlined),
             splashRadius: 18,
             color: white,
