@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_lorem/flutter_lorem.dart';
 import 'package:clipnote/noteView.dart';
+import 'package:clipnote/createNoteView.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -20,6 +21,16 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
+        onPressed: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => CreateNoteview()));
+        },
+        backgroundColor: cardColor,
+        child: Icon(Icons.add, color: white,size: 36,),
+
+      ),
       endDrawerEnableOpenDragGesture: true,
       key: _drawerKey,
       drawer: SideMenu(),
@@ -133,7 +144,10 @@ class _HomeState extends State<Home> {
                   itemBuilder: (context, index) {
                     return InkWell(
                       onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => NoteView()));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => NoteView()));
                       },
                       child: Container(
                         decoration: BoxDecoration(

@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:clipnote/noteView.dart';
-
 import 'colors.dart';
 
-class Editnoteview extends StatefulWidget {
-  const Editnoteview({super.key});
+class CreateNoteview extends StatefulWidget {
+  const CreateNoteview({super.key});
 
   @override
-  State<Editnoteview> createState() => _EditnoteviewState();
+  State<CreateNoteview> createState() => _CreateNoteviewState();
 }
 
-class _EditnoteviewState extends State<Editnoteview> {
+class _CreateNoteviewState extends State<CreateNoteview> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
