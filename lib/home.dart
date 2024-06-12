@@ -78,7 +78,7 @@
                             onTap: () {
                               Navigator.push(context, MaterialPageRoute(builder: (context) => Searchpage()));
                             },
-                            child: Container(
+                            child: SizedBox(
                               height: 55,
                               width: 202,
                               child: Column(
@@ -107,10 +107,10 @@
                               color: white,
                             ),
                             style: ButtonStyle(
-                              overlayColor: MaterialStateColor.resolveWith(
+                              overlayColor: WidgetStateColor.resolveWith(
                                 (states) => white.withOpacity(0.1),
                               ),
-                              shape: MaterialStateProperty.all<
+                              shape: WidgetStateProperty.all<
                                   RoundedRectangleBorder>(
                                 RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(50.0),
