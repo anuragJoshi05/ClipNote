@@ -65,4 +65,11 @@ class NotesDatabase {
     return await db!.update("Notes", {"title": "This is updated title"},
         where: "id = ?", whereArgs: [id]);
   }
+  Future deleteNote(int id) async {
+    final db = await instance.database;
+    await db!.delete("TABLE NAME", where: 'id: ?', whereArgs: [id]);
+
+    //Run this command in home.dart initState to delete Note.....
+    //await NotesDatabase.instance.deleteNote(3);
+  }
 }
