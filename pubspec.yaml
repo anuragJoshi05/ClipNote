@@ -38,6 +38,7 @@ dependencies:
   flutter_lorem:
   google_fonts: ^6.2.1
   sqflite: ^2.3.3+1
+  path:
 
 dev_dependencies:
   flutter_test:
