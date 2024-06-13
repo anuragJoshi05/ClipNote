@@ -33,10 +33,30 @@ class NotesDatabase {
   Future<void> insertEntry() async {
     final db = await instance.database;
     await db!.insert("Notes", {
-      "pin": 0,  // Use 0 for false and 1 for true
-      "title": "THIS IS MY TITLE",
+      "pin": 0, // Use 0 for false and 1 for true
+      "title": "FLUTTER IS GOOD",
       "content": "THIS IS MY NOTE CONTENT",
       "createdTime": "13 June 2024"
     });
+  }
+
+  Future<String> readAllNotes() async {
+    final db = await instance.database;
+    final orderBy = 'createdTime ASC';
+    final query_result = await db!.query("Notes", orderBy: orderBy);
+    print(query_result);
+    return "SUCCESSFUL";
+  }
+
+  Future<String?> readOneNote(int id) async {
+    final db = await instance.database;
+    final map = await db!.query(
+      "Notes",
+      columns: ["title"],
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+    print(map);
+    return map.isNotEmpty ? map.first['title'] as String : null;
   }
 }
