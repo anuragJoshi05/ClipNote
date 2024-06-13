@@ -59,4 +59,10 @@ class NotesDatabase {
     print(map);
     return map.isNotEmpty ? map.first['title'] as String : null;
   }
+
+  Future updateNote(int id) async {
+    final db = await instance.database;
+    return await db!.update("Notes", {"title": "This is updated title"},
+        where: "id = ?", whereArgs: [id]);
+  }
 }
