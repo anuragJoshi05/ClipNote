@@ -72,7 +72,7 @@ class _HomeState extends State<Home> {
         ? const Scaffold(backgroundColor: bgColor , body:
             Center(
               child: CircularProgressIndicator(
-                color: white,
+                color: Colors.orange,
               ),
             ),
           )
