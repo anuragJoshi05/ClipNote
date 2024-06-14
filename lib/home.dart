@@ -1,5 +1,6 @@
 import 'package:clipnote/SideMenuBar.dart';
 import 'package:clipnote/colors.dart';
+import 'package:clipnote/model/myNoteModel.dart';
 import 'package:clipnote/searchPage.dart';
 import 'package:clipnote/services/db.dart';
 import 'package:flutter/material.dart';
@@ -21,30 +22,30 @@ class _HomeState extends State<Home> {
   String note1 = lorem(paragraphs: 1, words: 50);
   final GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
 
-  Future createEntry() async {
-    await NotesDatabase.instance.insertEntry();
+  Future createEntry(Note note) async {
+    await NotesDatabase.instance.insertEntry(note);
   }
 
   Future getAllNotes() async {
     await NotesDatabase.instance.readAllNotes();
   }
 
-  Future readOneNote() async {
-    await NotesDatabase.instance.readOneNote(233);
+  Future readOneNote(int id) async {
+    await NotesDatabase.instance.readOneNote(id);
   }
 
-  Future updateOneNote() async {
-    await NotesDatabase.instance.updateNote(5);
+  Future updateOneNote(Note note) async {
+    await NotesDatabase.instance.updateNote(note);
+  }
+
+  Future deleteNote(Note note) async {
+    await NotesDatabase.instance.deleteNote(note);
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    createEntry();
-    getAllNotes();
-    updateOneNote();
-    readOneNote();
   }
 
   @override
