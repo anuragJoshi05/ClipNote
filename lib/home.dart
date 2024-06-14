@@ -20,8 +20,6 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   bool isLoading = true;
   late List<Note> notesList = [];
-  String note = lorem(paragraphs: 1, words: 9);
-  String note1 = lorem(paragraphs: 1, words: 50);
   final GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
 
   Future createEntry(Note note) async {
@@ -59,9 +57,10 @@ class _HomeState extends State<Home> {
       await createEntry(Note(
         pin: false,
         title: "Royal AJ",
-        content: note1,
+        content: lorem(paragraphs: 1,words: 100),
         createdTime: DateTime.now(),
       ));
+
       await getAllNotes();
     }
   }
@@ -69,8 +68,9 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return isLoading
-        ? const Scaffold(backgroundColor: bgColor , body:
-            Center(
+        ? const Scaffold(
+            backgroundColor: bgColor,
+            body: Center(
               child: CircularProgressIndicator(
                 color: Colors.white,
               ),
@@ -218,7 +218,7 @@ class _HomeState extends State<Home> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => NoteView()));
+                                      builder: (context) => NoteView(note: notesList[index],)));
                             },
                             child: Container(
                               decoration: BoxDecoration(
@@ -295,7 +295,7 @@ class _HomeState extends State<Home> {
                               ),
                               SizedBox(height: 10.0),
                               Text(
-                                !index.isEven ? note : note1,
+                                lorem(words:200),
                                 style: TextStyle(
                                   fontSize: 14.0,
                                   color: Colors.white,

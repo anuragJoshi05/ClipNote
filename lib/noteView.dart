@@ -2,9 +2,11 @@ import 'package:clipnote/colors.dart';
 import 'package:clipnote/editNoteView.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lorem/flutter_lorem.dart';
+import 'model/myNoteModel.dart';
 
 class NoteView extends StatefulWidget {
-  const NoteView({super.key});
+  Note note;
+  NoteView({super.key, required this.note});
 
   @override
   State<NoteView> createState() => _NoteViewState();
@@ -43,28 +45,30 @@ class _NoteViewState extends State<NoteView> {
           ),
         ],
       ),
-      body: Container(
-        padding: EdgeInsets.all(10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "HEADING",
-              style: TextStyle(
-                fontSize: 20.0,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+      body: SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.all(10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                widget.note.title,
+                style: TextStyle(
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
-            ),
-            SizedBox(height: 12.0),
-            Text(
-              lorem(paragraphs: 1, words: 200),
-              style: TextStyle(
-                fontSize: 14.0,
-                color: Colors.white,
+              SizedBox(height: 12.0),
+              Text(
+                widget.note.content,
+                style: TextStyle(
+                  fontSize: 14.0,
+                  color: Colors.white,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -5,18 +5,56 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_lorem/flutter_lorem.dart';
 import 'package:clipnote/noteView.dart';
 import 'package:clipnote/createNoteView.dart';
+import 'package:clipnote/model/myNoteModel.dart';
 
 class ArchieveView extends StatefulWidget {
-  const ArchieveView({super.key});
+  ArchieveView({super.key});
 
   @override
   State<ArchieveView> createState() => _ArchieveViewState();
 }
 
 class _ArchieveViewState extends State<ArchieveView> {
-  String note = lorem(paragraphs: 1, words: 9);
-  String note1 = lorem(paragraphs: 1, words: 50);
   final GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
+
+  // Adding a list of notes
+  final List<Note> notesList = [
+    Note(
+      id: 1,
+      pin: false,
+      title: lorem(words: 2),
+      content: lorem(paragraphs: 1, words: 20),
+      createdTime: DateTime.now(),
+    ),
+    Note(
+      id: 2,
+      pin: true,
+      title: lorem(words: 2),
+      content: lorem(paragraphs: 1, words: 30),
+      createdTime: DateTime.now(),
+    ),
+    Note(
+      id: 3,
+      pin: false,
+      title: lorem(words: 2),
+      content: lorem(paragraphs: 1, words: 25),
+      createdTime: DateTime.now(),
+    ),
+    Note(
+      id: 4,
+      pin: true,
+      title: lorem(words: 2),
+      content: lorem(paragraphs: 1, words: 35),
+      createdTime: DateTime.now(),
+    ),
+    Note(
+      id: 5,
+      pin: false,
+      title: lorem(words: 2),
+      content: lorem(paragraphs: 1, words: 40),
+      createdTime: DateTime.now(),
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +66,7 @@ class _ArchieveViewState extends State<ArchieveView> {
               MaterialPageRoute(builder: (context) => CreateNoteview()));
         },
         backgroundColor: cardColor,
-        child:Icon(
+        child: Icon(
           Icons.add,
           color: white,
           size: 36,
@@ -143,14 +181,16 @@ class _ArchieveViewState extends State<ArchieveView> {
                   crossAxisCount: 2,
                   mainAxisSpacing: 12,
                   crossAxisSpacing: 12,
-                  itemCount: 5,
+                  itemCount: notesList.length,
                   itemBuilder: (context, index) {
                     return InkWell(
                       onTap: () {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => NoteView()));
+                                builder: (context) => NoteView(
+                                  note: notesList[index],
+                                )));
                       },
                       child: Container(
                         decoration: BoxDecoration(
@@ -168,9 +208,9 @@ class _ArchieveViewState extends State<ArchieveView> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              "HEADING",
-                              style: TextStyle(
+                            Text(
+                              notesList[index].title,
+                              style: const TextStyle(
                                 fontSize: 18.0,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
@@ -178,8 +218,8 @@ class _ArchieveViewState extends State<ArchieveView> {
                             ),
                             SizedBox(height: 10.0),
                             Text(
-                              !index.isEven ? note : note1,
-                              style: TextStyle(
+                              notesList[index].content,
+                              style: const TextStyle(
                                 fontSize: 14.0,
                                 color: Colors.white,
                               ),
@@ -194,7 +234,7 @@ class _ArchieveViewState extends State<ArchieveView> {
               ListView.builder(
                 physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
-                itemCount: 5,
+                itemCount: notesList.length,
                 itemBuilder: (context, index) {
                   return Container(
                     margin: EdgeInsets.all(10),
@@ -213,9 +253,9 @@ class _ArchieveViewState extends State<ArchieveView> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          "HEADING",
-                          style: TextStyle(
+                        Text(
+                          notesList[index].title,
+                          style: const TextStyle(
                             fontSize: 18.0,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
@@ -223,8 +263,8 @@ class _ArchieveViewState extends State<ArchieveView> {
                         ),
                         SizedBox(height: 10.0),
                         Text(
-                          !index.isEven ? note : note1,
-                          style: TextStyle(
+                          notesList[index].content,
+                          style: const TextStyle(
                             fontSize: 14.0,
                             color: Colors.white,
                           ),
