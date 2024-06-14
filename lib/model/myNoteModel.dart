@@ -1,21 +1,3 @@
-class NotesImpNames {
-  static final String id = "id";
-  static final String pin = "pin";
-  static final String title = "title";
-  static final String content = "content";
-  static final String createdTime = "createdTime";
-  static final String tableName = "tableName";
-
-  static final List<String> values = [
-    id,
-    pin,
-    title,
-    content,
-    createdTime,
-    tableName
-  ];
-}
-
 class Note {
   final int? id;
   final bool pin;
@@ -23,12 +5,14 @@ class Note {
   final String content;
   final DateTime createdTime;
 
-  const Note(
-      {this.id,
-      required this.pin,
-      required this.title,
-      required this.content,
-      required this.createdTime});
+  const Note({
+    this.id,
+    required this.pin,
+    required this.title,
+    required this.content,
+    required this.createdTime,
+  });
+
   Note copy({
     int? id,
     bool? pin,
@@ -37,29 +21,41 @@ class Note {
     DateTime? createdTime,
   }) {
     return Note(
-        id: id ?? this.id,
-        pin: pin ?? this.pin,
-        title: title ?? this.title,
-        content: content ?? this.content,
-        createdTime: createdTime ?? this.createdTime);
+      id: id ?? this.id,
+      pin: pin ?? this.pin,
+      title: title ?? this.title,
+      content: content ?? this.content,
+      createdTime: createdTime ?? this.createdTime,
+    );
   }
 
   static Note fromJson(Map<String, Object?> json) {
     return Note(
-        id: json[NotesImpNames.id] as int?,
-        pin: json[NotesImpNames.pin] == 1,
-        title: json[NotesImpNames.title] as String,
-        content: json[NotesImpNames.content] as String,
-        createdTime: DateTime.parse(json[NotesImpNames.createdTime] as String));
+      id: json[NoteFields.id] as int?,
+      pin: json[NoteFields.pin] == 1,
+      title: json[NoteFields.title] as String,
+      content: json[NoteFields.content] as String,
+      createdTime: DateTime.parse(json[NoteFields.createdTime] as String),
+    );
   }
 
   Map<String, Object?> toJson() {
     return {
-      NotesImpNames.id: id,
-      NotesImpNames.pin: pin ? 1 : 0,
-      NotesImpNames.title: title,
-      NotesImpNames.content: content,
-      NotesImpNames.createdTime: createdTime.toIso8601String(),
+      NoteFields.id: id,
+      NoteFields.pin: pin ? 1 : 0,
+      NoteFields.title: title,
+      NoteFields.content: content,
+      NoteFields.createdTime: createdTime.toIso8601String(),
     };
   }
+}
+
+class NoteFields {
+  static final List<String> values = [id, pin, title, content, createdTime];
+
+  static const String id = '_id';
+  static const String pin = 'pin';
+  static const String title = 'title';
+  static const String content = 'content';
+  static const String createdTime = 'createdTime';
 }
