@@ -93,6 +93,18 @@ CREATE TABLE $tableNotes (
     );
   }
 
+  Future<List<Note>> searchNotes(String query) async {
+    final db = await instance.database;
+
+    final result = await db.query(
+      tableNotes,
+      where: '${NoteFields.title} LIKE ? OR ${NoteFields.content} LIKE ?',
+      whereArgs: ['%$query%', '%$query%'],
+    );
+
+    return result.map((json) => Note.fromJson(json)).toList();
+  }
+
   Future close() async {
     final db = await instance.database;
 
