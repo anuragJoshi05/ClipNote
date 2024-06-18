@@ -139,7 +139,7 @@ class _ArchieveViewState extends State<ArchieveView> {
                           ),
                           style: ButtonStyle(
                             overlayColor: MaterialStateColor.resolveWith(
-                                  (states) => white.withOpacity(0.1),
+                              (states) => white.withOpacity(0.1),
                             ),
                             shape: MaterialStateProperty.all<
                                 RoundedRectangleBorder>(
@@ -174,7 +174,7 @@ class _ArchieveViewState extends State<ArchieveView> {
               ),
               Container(
                 padding:
-                const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
                 child: MasonryGridView.count(
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
@@ -189,8 +189,8 @@ class _ArchieveViewState extends State<ArchieveView> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => NoteView(
-                                  note: notesList[index],
-                                )));
+                                      note: notesList[index],
+                                    )));
                       },
                       child: Container(
                         decoration: BoxDecoration(
