@@ -5,10 +5,22 @@ import 'package:clipnote/model/myNoteModel.dart';
 import 'package:clipnote/services/db.dart';
 import 'colors.dart';
 
-class NoteView extends StatelessWidget {
+class NoteView extends StatefulWidget {
   final Note note;
 
   NoteView({required this.note});
+
+  @override
+  State<NoteView> createState() => _NoteViewState();
+}
+
+class _NoteViewState extends State<NoteView> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    print(widget.note.pin);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +30,7 @@ class NoteView extends StatelessWidget {
         iconTheme: IconThemeData(color: white),
         backgroundColor: bgColor,
         title: Text(
-          note.title,
+          widget.note.title,
           style: TextStyle(color: white),
         ),
         actions: [
@@ -29,18 +41,20 @@ class NoteView extends StatelessWidget {
             },
           ),
           IconButton(
-            icon: Icon(note.pin ? Icons.push_pin : Icons.push_pin_outlined,
-                color: white),
+            icon: Icon(
+              widget.note.pin ? Icons.push_pin : Icons.push_pin_outlined,
+              color: widget.note.pin ? Colors.red : Colors.white,
+            ),
             onPressed: () async {
-              final updatedNote = note.copy(pin: !note.pin);
-              await NotesDatabase.instance.updateNote(updatedNote);
-              Navigator.pop(context, updatedNote);
+              await NotesDatabase.instance.pinNote(widget.note);
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => Home()));
             },
           ),
           IconButton(
             icon: Icon(Icons.delete_forever_outlined, color: white),
             onPressed: () async {
-              await NotesDatabase.instance.deleteNote(note.id);
+              await NotesDatabase.instance.deleteNote(widget.note.id);
               Navigator.pushReplacement(
                   context, MaterialPageRoute(builder: (context) => Home()));
             },
@@ -51,7 +65,7 @@ class NoteView extends StatelessWidget {
               final updatedNote = await Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => EditNoteView(note: note)),
+                    builder: (context) => EditNoteView(note: widget.note)),
               );
               if (updatedNote != null) {
                 Navigator.pop(context, updatedNote);
@@ -63,7 +77,7 @@ class NoteView extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Text(
-          note.content,
+          widget.note.content,
           style: TextStyle(color: white),
         ),
       ),
