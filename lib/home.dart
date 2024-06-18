@@ -51,20 +51,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    _initializeNotes();
-  }
-
-  Future<void> _initializeNotes() async {
-    await getAllNotes();
-    if (notesList.isEmpty) {
-      await createEntry(Note(
-        pin: false,
-        title: "Royal AJ",
-        content: lorem(paragraphs: 1, words: 100),
-        createdTime: DateTime.now(),
-      ));
-      await getAllNotes();
-    }
+    getAllNotes();
   }
 
   @override
@@ -206,74 +193,96 @@ class _HomeState extends State<Home> {
                         ),
                       ),
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 15),
-                      child: MasonryGridView.count(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 12,
-                        crossAxisSpacing: 12,
-                        itemCount: notesList.length,
-                        itemBuilder: (context, index) {
-                          return InkWell(
-                            onTap: () async {
-                              final updatedNote = await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          NoteView(note: notesList[index])));
-                              if (updatedNote != null) {
-                                setState(() {
-                                  notesList[index] =
-                                      updatedNote; // Update the list in the UI
-                                });
-                              }
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: cardColor,
-                                borderRadius: BorderRadius.circular(8),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.2),
-                                    spreadRadius: 1,
-                                    blurRadius: 3,
-                                  ),
-                                ],
-                              ),
-                              padding: const EdgeInsets.all(10.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    notesList[index].title,
-                                    style: TextStyle(
-                                      fontSize: 18.0,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  SizedBox(height: 10.0),
-                                  Text(
-                                    notesList[index].content.length > 250
-                                        ? notesList[index]
-                                            .content
-                                            .substring(0, 250)
-                                        : notesList[index].content,
-                                    style: TextStyle(
-                                      fontSize: 14.0,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
+                    if (notesList.isEmpty)
+                      Container(
+                        margin: EdgeInsets.symmetric(vertical: 10),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.lightbulb_outlined,
+                              color: white,
+                              size: 40,
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              "Notes you add appear here",
+                              style: TextStyle(
+                                color: white,
                               ),
                             ),
-                          );
-                        },
+                          ],
+                        ),
                       ),
-                    ),
+                    if (notesList.isNotEmpty)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 15),
+                        child: MasonryGridView.count(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 12,
+                          crossAxisSpacing: 12,
+                          itemCount: notesList.length,
+                          itemBuilder: (context, index) {
+                            return InkWell(
+                              onTap: () async {
+                                final updatedNote = await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            NoteView(note: notesList[index])));
+                                if (updatedNote != null) {
+                                  setState(() {
+                                    notesList[index] =
+                                        updatedNote; // Update the list in the UI
+                                  });
+                                }
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: cardColor,
+                                  borderRadius: BorderRadius.circular(8),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.2),
+                                      spreadRadius: 1,
+                                      blurRadius: 3,
+                                    ),
+                                  ],
+                                ),
+                                padding: const EdgeInsets.all(10.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      notesList[index].title,
+                                      style: TextStyle(
+                                        fontSize: 18.0,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    SizedBox(height: 10.0),
+                                    Text(
+                                      notesList[index].content.length > 250
+                                          ? notesList[index]
+                                              .content
+                                              .substring(0, 250)
+                                          : notesList[index].content,
+                                      style: TextStyle(
+                                        fontSize: 14.0,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
                     ListView.builder(
                       physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
