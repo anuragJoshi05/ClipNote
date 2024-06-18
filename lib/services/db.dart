@@ -22,7 +22,7 @@ class NotesDatabase {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    return await openDatabase(path, version: 1, onCreate: _createDB);
+    return await openDatabase(path, version: 2, onCreate: _createDB, onUpgrade: _upgradeDB);
   }
 
   Future _createDB(Database db, int version) async {
@@ -34,11 +34,19 @@ class NotesDatabase {
 CREATE TABLE $tableNotes ( 
   ${NoteFields.id} $idType, 
   ${NoteFields.pin} $boolType,
+  ${NoteFields.isArchieve} $boolType,
   ${NoteFields.title} $textType,
   ${NoteFields.content} $textType,
   ${NoteFields.createdTime} $textType
   )
 ''');
+  }
+
+  Future _upgradeDB(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute('ALTER TABLE $tableNotes ADD COLUMN ${NoteFields.isArchieve} BOOLEAN NOT NULL DEFAULT 0');
+    }
+    // Add further upgrade logic for future versions as needed
   }
 
   Future<Note> insertEntry(Note note) async {
@@ -95,6 +103,30 @@ CREATE TABLE $tableNotes (
       where: '${NoteFields.id} = ?',
       whereArgs: [note.id],
     );
+  }
+
+  Future<void> archNote(Note note) async {
+    final db = await instance.database;
+    final int newArchValue = note.isArchieve ? 0 : 1;
+
+    await db.update(
+      tableNotes,
+      {NoteFields.isArchieve: newArchValue},
+      where: '${NoteFields.id} = ?',
+      whereArgs: [note.id],
+    );
+  }
+
+  Future<List<Note>> readArchivedNotes() async {
+    final db = await instance.database;
+
+    final result = await db.query(
+      tableNotes,
+      where: '${NoteFields.isArchieve} = ?',
+      whereArgs: [1],
+    );
+
+    return result.map((json) => Note.fromJson(json)).toList();
   }
 
   Future<int> deleteNote(int? id) async {
