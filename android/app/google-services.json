@@ -12,7 +12,20 @@
           "package_name": "com.example.clipnote"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "588557204787-e54jbieunk2oc9p9arlh0i4l72nho992.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.clipnote",
+            "certificate_hash": "68420f22bf5978823b360a6c749bf4b0eba7a69c"
+          }
+        },
+        {
+          "client_id": "588557204787-pj7p1o1ten6k05s8gbpgs4pqu0cj1r8c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyC-nyNMs-iCwqpet-1GaEjbgXBNjBumMcw"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "588557204787-pj7p1o1ten6k05s8gbpgs4pqu0cj1r8c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
