@@ -1,5 +1,6 @@
-import 'package:clipnote/home.dart';
 import 'package:flutter/material.dart';
+import 'package:clipnote/archieveView.dart';
+import 'package:clipnote/home.dart';
 import 'package:clipnote/editNoteView.dart';
 import 'package:clipnote/model/myNoteModel.dart';
 import 'package:clipnote/services/db.dart';
@@ -15,11 +16,12 @@ class NoteView extends StatefulWidget {
 }
 
 class _NoteViewState extends State<NoteView> {
+  late Note _note;
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    print(widget.note.pin);
+    _note = widget.note;
   }
 
   @override
@@ -31,18 +33,37 @@ class _NoteViewState extends State<NoteView> {
         backgroundColor: bgColor,
         actions: [
           IconButton(
-            icon: Icon(Icons.archive, color: white),
-            onPressed: () {
-              // TODO: Archive functionality
+            icon: Icon(
+              _note.isArchieve ? Icons.archive : Icons.archive_outlined,
+              color: _note.isArchieve ? Colors.red : Colors.white,
+            ),
+            onPressed: () async {
+              final updatedNote = _note.copy(isArchieve: !_note.isArchieve);
+              await NotesDatabase.instance.updateNote(updatedNote);
+
+              setState(() {
+                _note = updatedNote;
+              });
+
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => ArchieveView()),
+              );
             },
           ),
           IconButton(
             icon: Icon(
-              widget.note.pin ? Icons.push_pin : Icons.push_pin_outlined,
-              color: widget.note.pin ? Colors.red : Colors.white,
+              _note.pin ? Icons.push_pin : Icons.push_pin_outlined,
+              color: _note.pin ? Colors.red : Colors.white,
             ),
             onPressed: () async {
-              await NotesDatabase.instance.pinNote(widget.note);
+              final updatedNote = _note.copy(pin: !_note.pin);
+              await NotesDatabase.instance.updateNote(updatedNote);
+
+              setState(() {
+                _note = updatedNote;
+              });
+
               Navigator.pushReplacement(
                   context, MaterialPageRoute(builder: (context) => Home()));
             },
@@ -50,7 +71,7 @@ class _NoteViewState extends State<NoteView> {
           IconButton(
             icon: Icon(Icons.delete_forever_outlined, color: white),
             onPressed: () async {
-              await NotesDatabase.instance.deleteNote(widget.note.id);
+              await NotesDatabase.instance.deleteNote(_note.id);
               Navigator.pushReplacement(
                   context, MaterialPageRoute(builder: (context) => Home()));
             },
@@ -61,10 +82,12 @@ class _NoteViewState extends State<NoteView> {
               final updatedNote = await Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => EditNoteView(note: widget.note)),
+                    builder: (context) => EditNoteView(note: _note)),
               );
               if (updatedNote != null) {
-                Navigator.pop(context, updatedNote);
+                setState(() {
+                  _note = updatedNote;
+                });
               }
             },
           ),
@@ -76,13 +99,15 @@ class _NoteViewState extends State<NoteView> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              widget.note.title,
+              _note.title,
               style: TextStyle(
                   fontSize: 25, color: white, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 20,),
+            SizedBox(
+              height: 20,
+            ),
             Text(
-              widget.note.content,
+              _note.content,
               style: TextStyle(
                 fontSize: 17,
                 color: white,
