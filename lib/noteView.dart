@@ -29,10 +29,6 @@ class _NoteViewState extends State<NoteView> {
       appBar: AppBar(
         iconTheme: IconThemeData(color: white),
         backgroundColor: bgColor,
-        title: Text(
-          widget.note.title,
-          style: TextStyle(color: white),
-        ),
         actions: [
           IconButton(
             icon: Icon(Icons.archive, color: white),
@@ -76,9 +72,23 @@ class _NoteViewState extends State<NoteView> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Text(
-          widget.note.content,
-          style: TextStyle(color: white),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget.note.title,
+              style: TextStyle(
+                  fontSize: 25, color: white, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 20,),
+            Text(
+              widget.note.content,
+              style: TextStyle(
+                fontSize: 17,
+                color: white,
+              ),
+            ),
+          ],
         ),
       ),
     );
