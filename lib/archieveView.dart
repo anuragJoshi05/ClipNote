@@ -2,10 +2,10 @@ import 'package:clipnote/SideMenuBar.dart';
 import 'package:clipnote/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:flutter_lorem/flutter_lorem.dart';
 import 'package:clipnote/noteView.dart';
 import 'package:clipnote/createNoteView.dart';
 import 'package:clipnote/model/myNoteModel.dart';
+import 'package:clipnote/services/db.dart';
 
 class ArchieveView extends StatefulWidget {
   ArchieveView({super.key});
@@ -16,45 +16,13 @@ class ArchieveView extends StatefulWidget {
 
 class _ArchieveViewState extends State<ArchieveView> {
   final GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
+  late Future<List<Note>> _archivedNotes;
 
-  // Adding a list of notes
-  final List<Note> notesList = [
-    Note(
-      id: 1,
-      pin: false,
-      title: lorem(words: 2),
-      content: lorem(paragraphs: 1, words: 20),
-      createdTime: DateTime.now(),
-    ),
-    Note(
-      id: 2,
-      pin: true,
-      title: lorem(words: 2),
-      content: lorem(paragraphs: 1, words: 30),
-      createdTime: DateTime.now(),
-    ),
-    Note(
-      id: 3,
-      pin: false,
-      title: lorem(words: 2),
-      content: lorem(paragraphs: 1, words: 25),
-      createdTime: DateTime.now(),
-    ),
-    Note(
-      id: 4,
-      pin: true,
-      title: lorem(words: 2),
-      content: lorem(paragraphs: 1, words: 35),
-      createdTime: DateTime.now(),
-    ),
-    Note(
-      id: 5,
-      pin: false,
-      title: lorem(words: 2),
-      content: lorem(paragraphs: 1, words: 40),
-      createdTime: DateTime.now(),
-    ),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _archivedNotes = NotesDatabase.instance.readAllNotes();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -164,7 +132,7 @@ class _ArchieveViewState extends State<ArchieveView> {
                 padding: EdgeInsets.symmetric(horizontal: 10),
                 margin: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
                 child: Text(
-                  "ALL",
+                  "ARCHIVED",
                   style: TextStyle(
                     color: white.withOpacity(0.5),
                     fontSize: 13,
@@ -173,106 +141,78 @@ class _ArchieveViewState extends State<ArchieveView> {
                 ),
               ),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-                child: MasonryGridView.count(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 12,
-                  crossAxisSpacing: 12,
-                  itemCount: notesList.length,
-                  itemBuilder: (context, index) {
-                    return InkWell(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => NoteView(
-                                      note: notesList[index],
-                                    )));
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: cardColor,
-                          borderRadius: BorderRadius.circular(8),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
-                              spreadRadius: 1,
-                              blurRadius: 3,
-                            ),
-                          ],
-                        ),
-                        padding: const EdgeInsets.all(10.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              notesList[index].title,
-                              style: const TextStyle(
-                                fontSize: 18.0,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                margin: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
+                child: FutureBuilder<List<Note>>(
+                  future: _archivedNotes,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Center(child: Text('No archived notes.'));
+                    } else {
+                      final notesList = snapshot.data!
+                          .where((note) => note.isArchieve)
+                          .toList();
+                      return MasonryGridView.count(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 12,
+                        crossAxisSpacing: 12,
+                        itemCount: notesList.length,
+                        itemBuilder: (context, index) {
+                          return InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => NoteView(
+                                            note: notesList[index],
+                                          )));
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: cardColor,
+                                borderRadius: BorderRadius.circular(8),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.2),
+                                    spreadRadius: 1,
+                                    blurRadius: 3,
+                                  ),
+                                ],
+                              ),
+                              padding: const EdgeInsets.all(10.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    notesList[index].title,
+                                    style: const TextStyle(
+                                      fontSize: 18.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  SizedBox(height: 10.0),
+                                  Text(
+                                    notesList[index].content,
+                                    style: const TextStyle(
+                                      fontSize: 14.0,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            SizedBox(height: 10.0),
-                            Text(
-                              notesList[index].content,
-                              style: const TextStyle(
-                                fontSize: 14.0,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
+                          );
+                        },
+                      );
+                    }
                   },
                 ),
-              ),
-              ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: notesList.length,
-                itemBuilder: (context, index) {
-                  return Container(
-                    margin: EdgeInsets.all(10),
-                    padding: const EdgeInsets.all(10.0),
-                    decoration: BoxDecoration(
-                      color: Color(0xFF34A853),
-                      borderRadius: BorderRadius.circular(8),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          spreadRadius: 1,
-                          blurRadius: 3,
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          notesList[index].title,
-                          style: const TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        SizedBox(height: 10.0),
-                        Text(
-                          notesList[index].content,
-                          style: const TextStyle(
-                            fontSize: 14.0,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
               ),
             ],
           ),
