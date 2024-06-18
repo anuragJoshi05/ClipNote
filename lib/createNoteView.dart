@@ -1,5 +1,8 @@
+import 'package:clipnote/home.dart';
+import 'package:clipnote/services/db.dart';
 import 'package:flutter/material.dart';
 import 'colors.dart';
+import 'model/myNoteModel.dart';
 
 class CreateNoteview extends StatefulWidget {
   const CreateNoteview({super.key});
@@ -9,6 +12,8 @@ class CreateNoteview extends StatefulWidget {
 }
 
 class _CreateNoteviewState extends State<CreateNoteview> {
+  TextEditingController title = TextEditingController();
+  TextEditingController content = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,9 +23,17 @@ class _CreateNoteviewState extends State<CreateNoteview> {
         backgroundColor: bgColor,
         actions: [
           IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.save_outlined),
             splashRadius: 18,
+            onPressed: () async {
+              await NotesDatabase.instance.insertEntry(Note(
+                  title: title.text,
+                  content: content.text,
+                  pin: false,
+                  createdTime: DateTime.now()));
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => Home()));
+            },
+            icon: Icon(Icons.save_outlined),
           )
         ],
       ),
@@ -30,6 +43,7 @@ class _CreateNoteviewState extends State<CreateNoteview> {
           children: [
             TextField(
               cursorColor: white,
+              controller: title,
               style: TextStyle(
                   fontSize: 25, color: white, fontWeight: FontWeight.bold),
               decoration: InputDecoration(
@@ -47,6 +61,7 @@ class _CreateNoteviewState extends State<CreateNoteview> {
             Container(
                 height: 300,
                 child: TextField(
+                  controller: content,
                   keyboardType: TextInputType.multiline,
                   minLines: 50,
                   maxLines: null,
