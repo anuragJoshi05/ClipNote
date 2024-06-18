@@ -29,6 +29,7 @@ class _CreateNoteviewState extends State<CreateNoteview> {
                   title: title.text,
                   content: content.text,
                   pin: false,
+                  isArchieve: false,
                   createdTime: DateTime.now()));
               Navigator.pushReplacement(
                   context, MaterialPageRoute(builder: (context) => Home()));
