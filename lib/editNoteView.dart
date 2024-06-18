@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:clipnote/model/myNoteModel.dart';
 import 'package:clipnote/services/db.dart';
 import 'colors.dart';
+import 'home.dart';
 
 class EditNoteView extends StatefulWidget {
   final Note note;
@@ -29,7 +30,8 @@ class _EditNoteViewState extends State<EditNoteView> {
       content: _contentController.text,
     );
     await NotesDatabase.instance.updateNote(updatedNote);
-    Navigator.pop(context, updatedNote);
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => Home()));
   }
 
   @override
