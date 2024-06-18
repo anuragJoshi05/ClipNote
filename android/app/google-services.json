@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "588557204787",
+    "project_id": "clipnote-906d4",
+    "storage_bucket": "clipnote-906d4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:588557204787:android:da2b5fc3f0aeb8e3741246",
+        "android_client_info": {
+          "package_name": "com.example.clipnote"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-nyNMs-iCwqpet-1GaEjbgXBNjBumMcw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
