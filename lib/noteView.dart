@@ -1,18 +1,14 @@
-import 'package:clipnote/colors.dart';
-import 'package:clipnote/editNoteView.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_lorem/flutter_lorem.dart';
-import 'model/myNoteModel.dart';
+import 'package:clipnote/editNoteView.dart';
+import 'package:clipnote/model/myNoteModel.dart';
+import 'package:clipnote/services/db.dart';
+import 'colors.dart';
 
-class NoteView extends StatefulWidget {
-  Note note;
-  NoteView({super.key, required this.note});
+class NoteView extends StatelessWidget {
+  final Note note;
 
-  @override
-  State<NoteView> createState() => _NoteViewState();
-}
+  NoteView({required this.note});
 
-class _NoteViewState extends State<NoteView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,55 +16,46 @@ class _NoteViewState extends State<NoteView> {
       appBar: AppBar(
         iconTheme: IconThemeData(color: white),
         backgroundColor: bgColor,
-        elevation: 0.00,
+        title: Text(
+          note.title,
+          style: TextStyle(color: white),
+        ),
         actions: [
           IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.push_pin_outlined),
-            splashRadius: 18,
-            color: white,
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.archive_outlined),
-            splashRadius: 18,
-            color: white,
-          ),
-          IconButton(
-            onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => Editnoteview()));
+            icon: Icon(Icons.edit, color: white),
+            onPressed: () async {
+              final updatedNote = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => EditNoteView(note: note)),
+              );
+              if (updatedNote != null) {
+                Navigator.pop(context, updatedNote);
+              }
             },
-            icon: Icon(Icons.edit_outlined),
-            splashRadius: 18,
-            color: white,
+          ),
+          IconButton(
+            icon: Icon(Icons.archive, color: white),
+            onPressed: () {
+              // TODO: Archive functionality
+            },
+          ),
+          IconButton(
+            icon: Icon(note.pin ? Icons.push_pin : Icons.push_pin_outlined,
+                color: white),
+            onPressed: () async {
+              final updatedNote = note.copy(pin: !note.pin);
+              await NotesDatabase.instance.updateNote(updatedNote);
+              Navigator.pop(context, updatedNote);
+            },
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          padding: EdgeInsets.all(10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                widget.note.title,
-                style: TextStyle(
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              SizedBox(height: 12.0),
-              Text(
-                widget.note.content,
-                style: TextStyle(
-                  fontSize: 14.0,
-                  color: Colors.white,
-                ),
-              ),
-            ],
-          ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Text(
+          note.content,
+          style: TextStyle(color: white),
         ),
       ),
     );
