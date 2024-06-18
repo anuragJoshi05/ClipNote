@@ -83,7 +83,7 @@ CREATE TABLE $tableNotes (
     );
   }
 
-  Future<int> deleteNote(int id) async {
+  Future<int> deleteNote(int? id) async {
     final db = await instance.database;
 
     return await db.delete(
