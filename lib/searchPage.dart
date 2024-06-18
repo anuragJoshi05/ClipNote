@@ -58,7 +58,8 @@ class _SearchPageState extends State<SearchPage> {
                           errorBorder: InputBorder.none,
                           disabledBorder: InputBorder.none,
                           hintText: "Search Your Notes",
-                          hintStyle: TextStyle(color: white.withOpacity(0.5), fontSize: 16),
+                          hintStyle: TextStyle(
+                              color: white.withOpacity(0.5), fontSize: 16),
                         ),
                         onSubmitted: (value) {
                           setState(() {
@@ -71,10 +72,10 @@ class _SearchPageState extends State<SearchPage> {
                 ),
                 isLoading
                     ? Center(
-                  child: CircularProgressIndicator(
-                    color: Colors.white,
-                  ),
-                )
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                        ),
+                      )
                     : noteSectionAll()
               ],
             ),
@@ -95,7 +96,10 @@ class _SearchPageState extends State<SearchPage> {
               children: [
                 Text(
                   "SEARCH RESULTS",
-                  style: TextStyle(color: white.withOpacity(0.5), fontSize: 13, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      color: white.withOpacity(0.5),
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -114,38 +118,41 @@ class _SearchPageState extends State<SearchPage> {
                 return note == null
                     ? SizedBox()
                     : InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => NoteView(note: note),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: white.withOpacity(0.4)),
-                      borderRadius: BorderRadius.circular(7),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          note.title,
-                          style: TextStyle(color: white, fontSize: 20, fontWeight: FontWeight.bold),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => NoteView(note: note),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: white.withOpacity(0.4)),
+                            borderRadius: BorderRadius.circular(7),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                note.title,
+                                style: TextStyle(
+                                    color: white,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(height: 10),
+                              Text(
+                                note.content.length > 250
+                                    ? "${note.content.substring(0, 250)}..."
+                                    : note.content,
+                                style: TextStyle(color: white),
+                              ),
+                            ],
+                          ),
                         ),
-                        SizedBox(height: 10),
-                        Text(
-                          note.content.length > 250
-                              ? "${note.content.substring(0, 250)}..."
-                              : note.content,
-                          style: TextStyle(color: white),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
+                      );
               },
             ),
           ),
