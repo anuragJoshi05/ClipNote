@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:clipnote/model/myNoteModel.dart';
@@ -78,6 +80,18 @@ CREATE TABLE $tableNotes (
     return db.update(
       tableNotes,
       note.toJson(),
+      where: '${NoteFields.id} = ?',
+      whereArgs: [note.id],
+    );
+  }
+
+  Future<void> pinNote(Note note) async {
+    final db = await instance.database;
+    final int newPinValue = note.pin ? 0 : 1;
+
+    await db.update(
+      tableNotes,
+      {NoteFields.pin: newPinValue},
       where: '${NoteFields.id} = ?',
       whereArgs: [note.id],
     );
