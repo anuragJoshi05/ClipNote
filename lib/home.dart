@@ -283,49 +283,49 @@ class _HomeState extends State<Home> {
                           },
                         ),
                       ),
-                    ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: 5,
-                      itemBuilder: (context, index) {
-                        return Container(
-                          margin: EdgeInsets.all(10),
-                          padding: const EdgeInsets.all(10.0),
-                          decoration: BoxDecoration(
-                            color: Color(0xFF34A853),
-                            borderRadius: BorderRadius.circular(8),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
-                                spreadRadius: 1,
-                                blurRadius: 3,
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                "HEADING",
-                                style: TextStyle(
-                                  fontSize: 18.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              SizedBox(height: 10.0),
-                              Text(
-                                lorem(words: 200),
-                                style: TextStyle(
-                                  fontSize: 14.0,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
+                    // ListView.builder(
+                    //   physics: const NeverScrollableScrollPhysics(),
+                    //   shrinkWrap: true,
+                    //   itemCount: 5,
+                    //   itemBuilder: (context, index) {
+                    //     return Container(
+                    //       margin: EdgeInsets.all(10),
+                    //       padding: const EdgeInsets.all(10.0),
+                    //       decoration: BoxDecoration(
+                    //         color: Color(0xFF34A853),
+                    //         borderRadius: BorderRadius.circular(8),
+                    //         boxShadow: [
+                    //           BoxShadow(
+                    //             color: Colors.black.withOpacity(0.2),
+                    //             spreadRadius: 1,
+                    //             blurRadius: 3,
+                    //           ),
+                    //         ],
+                    //       ),
+                    //       child: Column(
+                    //         crossAxisAlignment: CrossAxisAlignment.start,
+                    //         children: [
+                    //           const Text(
+                    //             "HEADING",
+                    //             style: TextStyle(
+                    //               fontSize: 18.0,
+                    //               fontWeight: FontWeight.bold,
+                    //               color: Colors.white,
+                    //             ),
+                    //           ),
+                    //           SizedBox(height: 10.0),
+                    //           Text(
+                    //             lorem(words: 200),
+                    //             style: TextStyle(
+                    //               fontSize: 14.0,
+                    //               color: Colors.white,
+                    //             ),
+                    //           ),
+                    //         ],
+                    //       ),
+                    //     );
+                    //   },
+                    // ),
                   ],
                 ),
               ),
