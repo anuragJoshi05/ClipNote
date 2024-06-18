@@ -1,3 +1,4 @@
+import 'package:clipnote/home.dart';
 import 'package:flutter/material.dart';
 import 'package:clipnote/editNoteView.dart';
 import 'package:clipnote/model/myNoteModel.dart';
@@ -22,19 +23,6 @@ class NoteView extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.edit, color: white),
-            onPressed: () async {
-              final updatedNote = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => EditNoteView(note: note)),
-              );
-              if (updatedNote != null) {
-                Navigator.pop(context, updatedNote);
-              }
-            },
-          ),
-          IconButton(
             icon: Icon(Icons.archive, color: white),
             onPressed: () {
               // TODO: Archive functionality
@@ -47,6 +35,27 @@ class NoteView extends StatelessWidget {
               final updatedNote = note.copy(pin: !note.pin);
               await NotesDatabase.instance.updateNote(updatedNote);
               Navigator.pop(context, updatedNote);
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.delete_forever_outlined, color: white),
+            onPressed: () async {
+              await NotesDatabase.instance.deleteNote(note.id);
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => Home()));
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.edit, color: white),
+            onPressed: () async {
+              final updatedNote = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => EditNoteView(note: note)),
+              );
+              if (updatedNote != null) {
+                Navigator.pop(context, updatedNote);
+              }
             },
           ),
         ],
