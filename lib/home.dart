@@ -3,12 +3,14 @@ import 'package:clipnote/colors.dart';
 import 'package:clipnote/model/myNoteModel.dart';
 import 'package:clipnote/searchPage.dart';
 import 'package:clipnote/services/db.dart';
+import 'package:clipnote/services/loginInfo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_lorem/flutter_lorem.dart';
 import 'package:clipnote/noteView.dart';
 import 'package:clipnote/createNoteView.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:clipnote/login.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -20,6 +22,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   bool isLoading = true;
   late List<Note> notesList = [];
+  late String? imgUrl;
   final GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
 
   Future createEntry(Note note) async {
@@ -28,10 +31,19 @@ class _HomeState extends State<Home> {
   }
 
   Future getAllNotes() async {
-    notesList = await NotesDatabase.instance.readAllNotes();
-    setState(() {
-      isLoading = false;
+    LocalDataSaver.getImg().then((value) {
+      if (this.mounted) {
+        setState(() {
+          imgUrl = value;
+        });
+      }
     });
+    notesList = await NotesDatabase.instance.readAllNotes();
+    if (this.mounted) {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   Future readOneNote(int id) async {
@@ -171,8 +183,11 @@ class _HomeState extends State<Home> {
                               ),
                               SizedBox(width: 9),
                               CircleAvatar(
+                                onBackgroundImageError: (Object,StackTrace){
+                                  print("OK");
+                                },
                                 radius: 16,
-                                backgroundColor: Colors.orange,
+                                backgroundImage: NetworkImage(imgUrl.toString()),
                               ),
                             ],
                           ),
