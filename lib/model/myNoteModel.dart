@@ -3,6 +3,7 @@ class Note {
   final bool pin;
   final bool isArchieve;
   final String title;
+  final String uniqueID;
   final String content;
   final DateTime createdTime;
 
@@ -11,6 +12,7 @@ class Note {
     required this.pin,
     required this.isArchieve,
     required this.title,
+    required this.uniqueID,
     required this.content,
     required this.createdTime,
   });
@@ -20,6 +22,7 @@ class Note {
     bool? pin,
     bool? isArchieve,
     String? title,
+    String? uniqueID,
     String? content,
     DateTime? createdTime,
   }) {
@@ -29,6 +32,7 @@ class Note {
       isArchieve: isArchieve ?? this.isArchieve,
       title: title ?? this.title,
       content: content ?? this.content,
+      uniqueID: uniqueID ?? this.uniqueID,
       createdTime: createdTime ?? this.createdTime,
     );
   }
@@ -40,6 +44,7 @@ class Note {
       isArchieve: json[NoteFields.isArchieve] == 1,
       title: json[NoteFields.title] as String,
       content: json[NoteFields.content] as String,
+      uniqueID: json[NoteFields.uniqueID] as String,
       createdTime: DateTime.parse(json[NoteFields.createdTime] as String),
     );
   }
@@ -51,6 +56,7 @@ class Note {
       NoteFields.isArchieve: isArchieve ? 1 : 0,
       NoteFields.title: title,
       NoteFields.content: content,
+      NoteFields.uniqueID:uniqueID,
       NoteFields.createdTime: createdTime.toIso8601String(),
     };
   }
@@ -62,11 +68,13 @@ class NoteFields {
     pin,
     isArchieve,
     title,
+    uniqueID,
     content,
     createdTime
   ];
 
   static const String id = '_id';
+  static const String uniqueID = 'uniqueID';
   static const String pin = 'pin';
   static const String isArchieve = 'isArchieve';
   static const String title = 'title';
