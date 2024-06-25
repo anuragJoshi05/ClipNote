@@ -1,3 +1,4 @@
+import 'package:clipnote/services/firestore_db.dart';
 import 'package:flutter/material.dart';
 import 'package:clipnote/model/myNoteModel.dart';
 import 'package:clipnote/services/db.dart';
@@ -29,10 +30,14 @@ class _EditNoteViewState extends State<EditNoteView> {
       title: _titleController.text,
       content: _contentController.text,
     );
+
     await NotesDatabase.instance.updateNote(updatedNote);
+    await FireDB().updateNoteFirestore(updatedNote); // Ensure this is called
+
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => Home()));
   }
+
 
   @override
   Widget build(BuildContext context) {
