@@ -5,6 +5,7 @@ import 'package:clipnote/editNoteView.dart';
 import 'package:clipnote/model/myNoteModel.dart';
 import 'package:clipnote/services/db.dart';
 import 'colors.dart';
+import 'package:intl/intl.dart';
 
 class NoteView extends StatefulWidget {
   final Note note;
@@ -95,25 +96,39 @@ class _NoteViewState extends State<NoteView> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              _note.title,
-              style: TextStyle(
-                  fontSize: 25, color: white, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Text(
-              _note.content,
-              style: TextStyle(
-                fontSize: 17,
-                color: white,
+        child: SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Created on ${DateFormat.yMMMMEEEEd().format(widget.note.createdTime)}",
+                style: TextStyle(
+                  color: white,
+                ),
               ),
-            ),
-          ],
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                _note.title,
+                style: TextStyle(
+                    fontSize: 25, color: white, fontWeight: FontWeight.bold),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Text(
+                _note.content,
+                style: TextStyle(
+                  fontSize: 17,
+                  color: white,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
