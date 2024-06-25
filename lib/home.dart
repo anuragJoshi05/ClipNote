@@ -22,6 +22,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  bool isStaggered = true;
   bool isLoading = true;
   late List<Note> notesList = [];
   late String? imgUrl;
@@ -66,6 +67,8 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     getAllNotes();
+    FireDB().getAllStoredNotes(); // Fetch notes from Firestore
+    LocalDataSaver.saveSyncSet(false);
   }
 
   @override
@@ -101,6 +104,7 @@ class _HomeState extends State<Home> {
             backgroundColor: bgColor,
             body: SafeArea(
               child: SingleChildScrollView(
+                physics: BouncingScrollPhysics(),
                 child: Column(
                   children: [
                     Container(
@@ -144,7 +148,8 @@ class _HomeState extends State<Home> {
                                 },
                                 child: SizedBox(
                                   height: 55,
-                                  width: 202,
+                                  width:
+                                      MediaQuery.of(context).size.width / 1.95,
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     crossAxisAlignment:
@@ -166,13 +171,18 @@ class _HomeState extends State<Home> {
                           Row(
                             children: [
                               TextButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  setState(() {
+                                    isStaggered = !isStaggered;
+                                  });
+                                },
                                 child: Icon(
-                                  Icons.grid_view,
+                                  isStaggered ? Icons.list : Icons.grid_view,
                                   color: white,
                                 ),
                                 style: ButtonStyle(
-                                  overlayColor: WidgetStateColor.resolveWith(
+                                  overlayColor:
+                                      WidgetStateProperty.resolveWith(
                                     (states) => white.withOpacity(0.1),
                                   ),
                                   shape: WidgetStateProperty.all<
@@ -246,118 +256,87 @@ class _HomeState extends State<Home> {
                       Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 15),
-                        child: MasonryGridView.count(
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          crossAxisCount: 2,
-                          mainAxisSpacing: 12,
-                          crossAxisSpacing: 12,
-                          itemCount: notesList.length,
-                          itemBuilder: (context, index) {
-                            return InkWell(
-                              onTap: () async {
-                                final updatedNote = await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            NoteView(note: notesList[index])));
-                                if (updatedNote != null) {
-                                  setState(() {
-                                    notesList[index] =
-                                        updatedNote; // Update the list in the UI
-                                  });
-                                }
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: cardColor,
-                                  borderRadius: BorderRadius.circular(8),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.2),
-                                      spreadRadius: 1,
-                                      blurRadius: 3,
-                                    ),
-                                  ],
-                                ),
-                                padding: const EdgeInsets.all(10.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      notesList[index].title,
-                                      style: TextStyle(
-                                        fontSize: 18.0,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    SizedBox(height: 10.0),
-                                    Text(
-                                      notesList[index].content.length > 250
-                                          ? notesList[index]
-                                              .content
-                                              .substring(0, 250)
-                                          : notesList[index].content,
-                                      style: TextStyle(
-                                        fontSize: 14.0,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                        child: isStaggered
+                            ? MasonryGridView.count(
+                                physics: const NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                crossAxisCount: 2,
+                                mainAxisSpacing: 12,
+                                crossAxisSpacing: 12,
+                                itemCount: notesList.length,
+                                itemBuilder: (context, index) {
+                                  return _buildNoteItem(context, index);
+                                },
+                              )
+                            : ListView.builder(
+                                physics: const NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                itemCount: notesList.length,
+                                itemBuilder: (context, index) {
+                                  return _buildNoteItem(context, index);
+                                },
                               ),
-                            );
-                          },
-                        ),
                       ),
-                    // ListView.builder(
-                    //   physics: const NeverScrollableScrollPhysics(),
-                    //   shrinkWrap: true,
-                    //   itemCount: 5,
-                    //   itemBuilder: (context, index) {
-                    //     return Container(
-                    //       margin: EdgeInsets.all(10),
-                    //       padding: const EdgeInsets.all(10.0),
-                    //       decoration: BoxDecoration(
-                    //         color: Color(0xFF34A853),
-                    //         borderRadius: BorderRadius.circular(8),
-                    //         boxShadow: [
-                    //           BoxShadow(
-                    //             color: Colors.black.withOpacity(0.2),
-                    //             spreadRadius: 1,
-                    //             blurRadius: 3,
-                    //           ),
-                    //         ],
-                    //       ),
-                    //       child: Column(
-                    //         crossAxisAlignment: CrossAxisAlignment.start,
-                    //         children: [
-                    //           const Text(
-                    //             "HEADING",
-                    //             style: TextStyle(
-                    //               fontSize: 18.0,
-                    //               fontWeight: FontWeight.bold,
-                    //               color: Colors.white,
-                    //             ),
-                    //           ),
-                    //           SizedBox(height: 10.0),
-                    //           Text(
-                    //             lorem(words: 200),
-                    //             style: TextStyle(
-                    //               fontSize: 14.0,
-                    //               color: Colors.white,
-                    //             ),
-                    //           ),
-                    //         ],
-                    //       ),
-                    //     );
-                    //   },
-                    // ),
                   ],
                 ),
               ),
             ),
           );
+  }
+
+  Widget _buildNoteItem(BuildContext context, int index) {
+    return InkWell(
+      onTap: () async {
+        final updatedNote = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => NoteView(note: notesList[index]),
+          ),
+        );
+        if (updatedNote != null) {
+          setState(() {
+            notesList[index] = updatedNote; // Update the list in the UI
+          });
+        }
+      },
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+        padding: const EdgeInsets.all(10.0),
+        decoration: BoxDecoration(
+          color: cardColor,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              spreadRadius: 1,
+              blurRadius: 3,
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              notesList[index].title,
+              style: TextStyle(
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            SizedBox(height: 10.0),
+            Text(
+              notesList[index].content.length > 250
+                  ? notesList[index].content.substring(0, 250)
+                  : notesList[index].content,
+              style: TextStyle(
+                fontSize: 14.0,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
