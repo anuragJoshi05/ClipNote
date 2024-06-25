@@ -3,6 +3,7 @@ import 'package:clipnote/services/db.dart';
 import 'package:flutter/material.dart';
 import 'colors.dart';
 import 'model/myNoteModel.dart';
+import 'package:uuid/uuid.dart';
 
 class CreateNoteview extends StatefulWidget {
   const CreateNoteview({super.key});
@@ -14,6 +15,7 @@ class CreateNoteview extends StatefulWidget {
 class _CreateNoteviewState extends State<CreateNoteview> {
   TextEditingController title = TextEditingController();
   TextEditingController content = TextEditingController();
+  var uuid = Uuid();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,6 +29,7 @@ class _CreateNoteviewState extends State<CreateNoteview> {
             onPressed: () async {
               await NotesDatabase.instance.insertEntry(Note(
                   title: title.text,
+                  uniqueID : uuid.v1(),
                   content: content.text,
                   pin: false,
                   isArchieve: false,
@@ -38,33 +41,35 @@ class _CreateNoteviewState extends State<CreateNoteview> {
           )
         ],
       ),
-      body: Container(
-        margin: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-        child: Column(
-          children: [
-            TextField(
-              cursorColor: white,
-              controller: title,
-              style: TextStyle(
-                  fontSize: 25, color: white, fontWeight: FontWeight.bold),
-              decoration: InputDecoration(
-                  border: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  errorBorder: InputBorder.none,
-                  disabledBorder: InputBorder.none,
-                  hintText: "Title",
-                  hintStyle: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey.withOpacity(0.8),
-                  )),
-            ),
-            Container(
-                height: 300,
+      body: SingleChildScrollView(
+        child: Container(
+          margin: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+          child: Column(
+            children: [
+              TextField(
+                cursorColor: white,
+                controller: title,
+                style: TextStyle(
+                    fontSize: 25, color: white, fontWeight: FontWeight.bold),
+                decoration: InputDecoration(
+                    border: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    errorBorder: InputBorder.none,
+                    disabledBorder: InputBorder.none,
+                    hintText: "Title",
+                    hintStyle: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey.withOpacity(0.8),
+                    )),
+              ),
+              SizedBox(height: 10),
+              Container(
+                height: MediaQuery.of(context).size.height - 150,
                 child: TextField(
                   controller: content,
                   keyboardType: TextInputType.multiline,
-                  minLines: 50,
+                  minLines: 1,
                   maxLines: null,
                   cursorColor: white,
                   style: TextStyle(
@@ -82,8 +87,10 @@ class _CreateNoteviewState extends State<CreateNoteview> {
                         fontWeight: FontWeight.bold,
                         color: Colors.grey.withOpacity(0.8),
                       )),
-                )),
-          ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
