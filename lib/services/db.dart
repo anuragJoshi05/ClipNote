@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:clipnote/services/firestore_db.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:clipnote/model/myNoteModel.dart';
@@ -22,7 +23,8 @@ class NotesDatabase {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    return await openDatabase(path, version: 2, onCreate: _createDB, onUpgrade: _upgradeDB);
+    return await openDatabase(path,
+        version: 2, onCreate: _createDB, onUpgrade: _upgradeDB);
   }
 
   Future _createDB(Database db, int version) async {
@@ -31,20 +33,22 @@ class NotesDatabase {
     const textType = 'TEXT NOT NULL';
 
     await db.execute('''
-CREATE TABLE $tableNotes ( 
-  ${NoteFields.id} $idType, 
-  ${NoteFields.pin} $boolType,
-  ${NoteFields.isArchieve} $boolType,
-  ${NoteFields.title} $textType,
-  ${NoteFields.content} $textType,
-  ${NoteFields.createdTime} $textType
-  )
-''');
+  CREATE TABLE $tableNotes ( 
+    ${NoteFields.id} $idType, 
+    ${NoteFields.uniqueID} $textType,
+    ${NoteFields.pin} $boolType,
+    ${NoteFields.isArchieve} $boolType,
+    ${NoteFields.title} $textType,
+    ${NoteFields.content} $textType,
+    ${NoteFields.createdTime} $textType
+    )
+  ''');
   }
 
   Future _upgradeDB(Database db, int oldVersion, int newVersion) async {
     if (oldVersion < 2) {
-      await db.execute('ALTER TABLE $tableNotes ADD COLUMN ${NoteFields.isArchieve} BOOLEAN NOT NULL DEFAULT 0');
+      await db.execute(
+          'ALTER TABLE $tableNotes ADD COLUMN ${NoteFields.isArchieve} BOOLEAN NOT NULL DEFAULT 0');
     }
     // Add further upgrade logic for future versions as needed
   }
@@ -53,6 +57,7 @@ CREATE TABLE $tableNotes (
     final db = await instance.database;
 
     final id = await db.insert(tableNotes, note.toJson());
+    await FireDB().createNewNoteFirestore(note);
     return note.copy(id: id);
   }
 
@@ -83,6 +88,7 @@ CREATE TABLE $tableNotes (
   }
 
   Future<int> updateNote(Note note) async {
+    await FireDB().updateNoteFirestore(note);
     final db = await instance.database;
 
     return db.update(
@@ -129,13 +135,14 @@ CREATE TABLE $tableNotes (
     return result.map((json) => Note.fromJson(json)).toList();
   }
 
-  Future<int> deleteNote(int? id) async {
+  Future<int> deleteNote(Note? note) async {
+    await FireDB().deleteNoteFirestore(note!);
     final db = await instance.database;
 
     return await db.delete(
       tableNotes,
       where: '${NoteFields.id} = ?',
-      whereArgs: [id],
+      whereArgs: [note.id],
     );
   }
 
