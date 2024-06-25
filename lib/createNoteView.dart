@@ -42,6 +42,7 @@ class _CreateNoteviewState extends State<CreateNoteview> {
         ],
       ),
       body: SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
         child: Container(
           margin: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
           child: Column(
