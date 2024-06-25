@@ -2,7 +2,9 @@ import 'package:clipnote/SideMenuBar.dart';
 import 'package:clipnote/colors.dart';
 import 'package:clipnote/model/myNoteModel.dart';
 import 'package:clipnote/searchPage.dart';
+import 'package:clipnote/services/auth.dart';
 import 'package:clipnote/services/db.dart';
+import 'package:clipnote/services/firestore_db.dart';
 import 'package:clipnote/services/loginInfo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -55,8 +57,8 @@ class _HomeState extends State<Home> {
     await getAllNotes(); // Update the list after updating a note
   }
 
-  Future deleteNote(int id) async {
-    await NotesDatabase.instance.deleteNote(id);
+  Future deleteNote(Note note) async {
+    await NotesDatabase.instance.deleteNote(note);
     await getAllNotes(); // Update the list after deleting a note
   }
 
@@ -170,10 +172,10 @@ class _HomeState extends State<Home> {
                                   color: white,
                                 ),
                                 style: ButtonStyle(
-                                  overlayColor: MaterialStateColor.resolveWith(
+                                  overlayColor: WidgetStateColor.resolveWith(
                                     (states) => white.withOpacity(0.1),
                                   ),
-                                  shape: MaterialStateProperty.all<
+                                  shape: WidgetStateProperty.all<
                                       RoundedRectangleBorder>(
                                     RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(50.0),
@@ -182,12 +184,23 @@ class _HomeState extends State<Home> {
                                 ),
                               ),
                               SizedBox(width: 9),
-                              CircleAvatar(
-                                onBackgroundImageError: (Object,StackTrace){
-                                  print("OK");
+                              GestureDetector(
+                                onTap: () {
+                                  signOut();
+                                  LocalDataSaver.saveLoginData(false);
+                                  Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => Login()));
                                 },
-                                radius: 16,
-                                backgroundImage: NetworkImage(imgUrl.toString()),
+                                child: CircleAvatar(
+                                  onBackgroundImageError: (Object, StackTrace) {
+                                    print("OK");
+                                  },
+                                  radius: 16,
+                                  backgroundImage:
+                                      NetworkImage(imgUrl.toString()),
+                                ),
                               ),
                             ],
                           ),
