@@ -71,7 +71,7 @@ class _NoteViewState extends State<NoteView> {
           IconButton(
             icon: Icon(Icons.delete_forever_outlined, color: white),
             onPressed: () async {
-              await NotesDatabase.instance.deleteNote(_note.id);
+              await NotesDatabase.instance.deleteNote(_note);
               Navigator.pushReplacement(
                   context, MaterialPageRoute(builder: (context) => Home()));
             },
