@@ -1,5 +1,5 @@
 import 'package:clipnote/colors.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:clipnote/services/loginInfo.dart';
 import 'package:flutter/material.dart';
 
 class Settingsview extends StatefulWidget {
@@ -10,7 +10,21 @@ class Settingsview extends StatefulWidget {
 }
 
 class _SettingsviewState extends State<Settingsview> {
-  bool value = true;
+  bool value = false;
+
+  Future<void> getSyncSet() async {
+    bool? valueFromDb = await LocalDataSaver.getSyncSet();
+    setState(() {
+      value = valueFromDb ?? false;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getSyncSet();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,6 +57,7 @@ class _SettingsviewState extends State<Settingsview> {
                     onChanged: (switchValue) {
                       setState(() {
                         value = switchValue;
+                        LocalDataSaver.saveSyncSet(switchValue);
                       });
                     }),
               ],
