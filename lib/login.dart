@@ -35,6 +35,7 @@ class _loginState extends State<Login> {
               LocalDataSaver.saveImg(currentUser!.photoURL.toString());
               LocalDataSaver.saveMail(currentUser.email.toString());
               LocalDataSaver.saveName(currentUser.displayName.toString());
+              LocalDataSaver.saveSyncSet(false);
               await FireDB().getAllStoredNotes();
               Navigator.pushReplacement(
                   context, MaterialPageRoute(builder: (context) => Home()));
