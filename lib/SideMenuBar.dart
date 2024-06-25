@@ -110,7 +110,7 @@ class _SideMenuState extends State<SideMenu> {
             width: 10,
           ),
           Text(
-            "Archieve",
+            "Archive",
             style: TextStyle(color: white.withOpacity(0.7), fontSize: 18),
           ),
         ],
