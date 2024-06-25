@@ -38,7 +38,6 @@ class _EditNoteViewState extends State<EditNoteView> {
         context, MaterialPageRoute(builder: (context) => Home()));
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,33 +53,34 @@ class _EditNoteViewState extends State<EditNoteView> {
           ),
         ],
       ),
-      body: Container(
-        margin: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-        child: Column(
-          children: [
-            TextField(
-              cursorColor: white,
-              controller: _titleController,
-              style: TextStyle(
-                fontSize: 25,
-                color: white,
-                fontWeight: FontWeight.bold,
-              ),
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                errorBorder: InputBorder.none,
-                disabledBorder: InputBorder.none,
-                hintText: "Title",
-                hintStyle: TextStyle(
+      body: SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
+        child: Container(
+          margin: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+          child: Column(
+            children: [
+              TextField(
+                cursorColor: white,
+                controller: _titleController,
+                style: TextStyle(
+                  fontSize: 25,
+                  color: white,
                   fontWeight: FontWeight.bold,
-                  color: Colors.grey.withOpacity(0.8),
+                ),
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  errorBorder: InputBorder.none,
+                  disabledBorder: InputBorder.none,
+                  hintText: "Title",
+                  hintStyle: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey.withOpacity(0.8),
+                  ),
                 ),
               ),
-            ),
-            Expanded(
-              child: TextField(
+              TextField(
                 controller: _contentController,
                 keyboardType: TextInputType.multiline,
                 maxLines: null,
@@ -102,8 +102,8 @@ class _EditNoteViewState extends State<EditNoteView> {
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
