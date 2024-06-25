@@ -45,3 +45,17 @@ Future<User?> signInWithGoogle() async {
     return null;
   }
 }
+
+// Sign out function
+Future<void> signOut() async {
+  try {
+    print('Attempting to sign out...');
+
+    await googleSignIn.signOut();
+    await _auth.signOut();
+
+    print('User signed out.');
+  } catch (e) {
+    print('Error signing out: $e');
+  }
+}
