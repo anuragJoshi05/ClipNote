@@ -49,7 +49,8 @@ class _LoginState extends State<Login> {
       ),
       body: Column(
         children: [
-          const SizedBox(height: 50), // Add spacing between the AppBar and content
+          const SizedBox(
+              height: 50), // Add spacing between the AppBar and content
           const Text(
             'Welcome to ClipNote',
             style: TextStyle(
@@ -70,9 +71,10 @@ class _LoginState extends State<Login> {
               LocalDataSaver.saveMail(currentUser.email.toString());
               LocalDataSaver.saveName(currentUser.displayName.toString());
               LocalDataSaver.saveSyncSet(false);
-              await FireDB().getAllStoredNotes();
-              Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (context) => const Home()));
+              await FireDB()
+                  .getAllStoredNotesForUser(currentUser.email.toString());
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => const Home()));
             },
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
