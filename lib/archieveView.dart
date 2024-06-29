@@ -11,6 +11,8 @@ import 'package:clipnote/searchPage.dart';
 import 'package:clipnote/services/loginInfo.dart';
 import 'package:clipnote/login.dart';
 
+import 'home.dart';
+
 class ArchieveView extends StatefulWidget {
   ArchieveView({super.key});
 
@@ -65,11 +67,11 @@ class _ArchieveViewState extends State<ArchieveView> {
                   borderRadius: BorderRadius.circular(40)),
               onPressed: () async {
                 await Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => CreateNoteview()));
+                    MaterialPageRoute(builder: (context) => const CreateNoteview()));
                 await getAllArchievedNotes(); // Update the list after returning from CreateNoteView
               },
               backgroundColor: cardColor,
-              child: Icon(
+              child: const Icon(
                 Icons.add,
                 color: white,
                 size: 36,
@@ -77,16 +79,16 @@ class _ArchieveViewState extends State<ArchieveView> {
             ),
             endDrawerEnableOpenDragGesture: true,
             key: _drawerKey,
-            drawer: SideMenu(),
+            drawer: const SideMenu(),
             backgroundColor: bgColor,
             body: SafeArea(
               child: SingleChildScrollView(
-                physics: BouncingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
                 child: Column(
                   children: [
                     Container(
                       margin:
-                          EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                          const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                       width: MediaQuery.of(context).size.width,
                       height: 55,
                       decoration: BoxDecoration(
@@ -109,19 +111,19 @@ class _ArchieveViewState extends State<ArchieveView> {
                                 onPressed: () {
                                   _drawerKey.currentState!.openDrawer();
                                 },
-                                icon: Icon(
+                                icon: const Icon(
                                   Icons.menu,
                                   color: white,
                                 ),
                               ),
-                              SizedBox(width: 16),
+                              const SizedBox(width: 16),
                               GestureDetector(
                                 onTap: () {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              SearchPage())); // Corrected to SearchPage()
+                                              const SearchPage())); // Corrected to SearchPage()
                                 },
                                 child: SizedBox(
                                   height: 55,
@@ -158,8 +160,7 @@ class _ArchieveViewState extends State<ArchieveView> {
                                   color: white,
                                 ),
                                 style: ButtonStyle(
-                                  overlayColor:
-                                      WidgetStateProperty.resolveWith(
+                                  overlayColor: WidgetStateProperty.resolveWith(
                                     (states) => white.withOpacity(0.1),
                                   ),
                                   shape: WidgetStateProperty.all<
@@ -170,7 +171,7 @@ class _ArchieveViewState extends State<ArchieveView> {
                                   ),
                                 ),
                               ),
-                              SizedBox(width: 9),
+                              const SizedBox(width: 9),
                               GestureDetector(
                                 onTap: () {
                                   signOut();
@@ -178,7 +179,7 @@ class _ArchieveViewState extends State<ArchieveView> {
                                   Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => Login()));
+                                          builder: (context) => const Login()));
                                 },
                                 child: CircleAvatar(
                                   onBackgroundImageError: (Object, StackTrace) {
@@ -196,9 +197,9 @@ class _ArchieveViewState extends State<ArchieveView> {
                     ),
                     Container(
                       alignment: Alignment.centerLeft,
-                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
                       margin:
-                          EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+                          const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
                       child: Text(
                         "ARCHIVED",
                         style: TextStyle(
@@ -210,20 +211,64 @@ class _ArchieveViewState extends State<ArchieveView> {
                     ),
                     if (notesList.isEmpty)
                       Container(
-                        margin: EdgeInsets.symmetric(vertical: 10),
+                        margin: const EdgeInsets.symmetric(vertical: 20),
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: cardColor,
+                          borderRadius: BorderRadius.circular(15),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              spreadRadius: 1,
+                              blurRadius: 3,
+                            ),
+                          ],
+                        ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
-                              Icons.lightbulb_outlined,
-                              color: white,
-                              size: 40,
+                            const Icon(
+                              Icons.archive_outlined,
+                              color: Colors.blueAccent,
+                              size: 50,
                             ),
-                            SizedBox(height: 10),
+                            const SizedBox(height: 15),
                             Text(
-                              "No Archived notes",
+                              "No Archived Notes",
                               style: TextStyle(
-                                color: white,
+                                color: white.withOpacity(0.9),
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              "Your archived notes will appear here.",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: white.withOpacity(0.6),
+                                fontSize: 16,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => const Home()));
+                                // Add your logic to navigate to the notes section or create a note
+                              },
+                              icon: const Icon(Icons.add, color: white),
+                              label: const Text(
+                                "Go to Notes",
+                                style: TextStyle(color: white),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blueAccent,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30.0),
+                                ),
                               ),
                             ),
                           ],
@@ -277,7 +322,7 @@ class _ArchieveViewState extends State<ArchieveView> {
         }
       },
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+        margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
         padding: const EdgeInsets.all(10.0),
         decoration: BoxDecoration(
           color: cardColor,
@@ -295,18 +340,18 @@ class _ArchieveViewState extends State<ArchieveView> {
           children: [
             Text(
               notesList[index].title,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
             ),
-            SizedBox(height: 10.0),
+            const SizedBox(height: 10.0),
             Text(
               notesList[index].content.length > 250
                   ? notesList[index].content.substring(0, 250)
                   : notesList[index].content,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14.0,
                 color: Colors.white,
               ),
