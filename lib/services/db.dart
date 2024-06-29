@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:clipnote/services/firestore_db.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -50,7 +48,6 @@ class NotesDatabase {
       await db.execute(
           'ALTER TABLE $tableNotes ADD COLUMN ${NoteFields.isArchieve} BOOLEAN NOT NULL DEFAULT 0');
     }
-    // Add further upgrade logic for future versions as needed
   }
 
   Future<Note> insertEntry(Note note) async {
@@ -156,6 +153,12 @@ class NotesDatabase {
     );
 
     return result.map((json) => Note.fromJson(json)).toList();
+  }
+
+  Future<void> clearDatabase() async {
+    final db = await instance.database;
+
+    await db.delete(tableNotes);
   }
 
   Future close() async {
