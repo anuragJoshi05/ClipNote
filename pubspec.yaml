@@ -42,7 +42,7 @@ dependencies:
   google_sign_in:
   firebase_auth:
   sign_in_button:
-  shared_preferences:
+  shared_preferences: ^2.2.3
   firebase_core:
   firebase_analytics:
   firebase_ui_auth: ^1.15.0
