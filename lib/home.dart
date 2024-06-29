@@ -6,9 +6,9 @@ import 'package:clipnote/services/auth.dart';
 import 'package:clipnote/services/db.dart';
 import 'package:clipnote/services/firestore_db.dart';
 import 'package:clipnote/services/loginInfo.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:flutter_lorem/flutter_lorem.dart';
 import 'package:clipnote/noteView.dart';
 import 'package:clipnote/createNoteView.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -28,47 +28,59 @@ class _HomeState extends State<Home> {
   late String? imgUrl;
   final GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
 
-  Future createEntry(Note note) async {
+  Future<void> createEntry(Note note) async {
     await NotesDatabase.instance.insertEntry(note);
     await getAllNotes(); // Update the list after creating a new entry
   }
 
-  Future getAllNotes() async {
+  Future<void> getAllNotes() async {
     LocalDataSaver.getImg().then((value) {
-      if (this.mounted) {
+      if (mounted) {
         setState(() {
           imgUrl = value;
         });
       }
     });
     notesList = await NotesDatabase.instance.readAllNotes();
-    if (this.mounted) {
+    if (mounted) {
       setState(() {
         isLoading = false;
       });
     }
   }
 
-  Future readOneNote(int id) async {
+  Future<void> readOneNote(int id) async {
     await NotesDatabase.instance.readOneNote(id);
   }
 
-  Future updateOneNote(Note note) async {
+  Future<void> updateOneNote(Note note) async {
     await NotesDatabase.instance.updateNote(note);
     await getAllNotes(); // Update the list after updating a note
   }
 
-  Future deleteNote(Note note) async {
+  Future<void> deleteNote(Note note) async {
     await NotesDatabase.instance.deleteNote(note);
     await getAllNotes(); // Update the list after deleting a note
+  }
+
+  Future<void> _fetchNotes() async {
+    final User? user = await LoginInfo().getCurrentUser();
+    if (user != null) {
+      notesList = await FireDB().getAllStoredNotesForUser(user.email!);
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
   }
 
   @override
   void initState() {
     super.initState();
     getAllNotes();
-    FireDB().getAllStoredNotes(); // Fetch notes from Firestore
-    LocalDataSaver.saveSyncSet(false);
+    _fetchNotes(); // Fetch notes from Firestore for the current user
+    LocalDataSaver.saveSyncSet(false); // Remove the sync button functionality
   }
 
   @override
@@ -181,8 +193,7 @@ class _HomeState extends State<Home> {
                                   color: white,
                                 ),
                                 style: ButtonStyle(
-                                  overlayColor:
-                                      WidgetStateProperty.resolveWith(
+                                  overlayColor: WidgetStateProperty.resolveWith(
                                     (states) => white.withOpacity(0.1),
                                   ),
                                   shape: WidgetStateProperty.all<
