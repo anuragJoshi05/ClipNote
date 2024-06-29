@@ -1,5 +1,18 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+class LoginInfo {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  Future<User?> getCurrentUser() async {
+    User? user = _auth.currentUser;
+    return user;
+  }
+
+  Future<void> signOut() async {
+    await _auth.signOut();
+  }
+}
 class LocalDataSaver {
   static String nameKey = "NAMEKEY";
   static String emailKey = "EMAILKEY";
@@ -41,16 +54,16 @@ class LocalDataSaver {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     return await preferences.setBool(logKey, isUserLoggedIn);
   }
-  static Future<bool> saveSyncSet(bool isSyncOn) async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    return await preferences.setBool(SyncKey, isSyncOn);
+  static Future<void> saveSyncSet(bool isSyncOn) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('syncSet', isSyncOn);
   }
   static Future<bool?> getLogData() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     return await preferences.getBool(logKey);
   }
   static Future<bool?> getSyncSet() async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    return await preferences.getBool(SyncKey);
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('syncSet');
   }
 }
