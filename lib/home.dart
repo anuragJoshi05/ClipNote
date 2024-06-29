@@ -2,6 +2,7 @@ import 'package:clipnote/SideMenuBar.dart';
 import 'package:clipnote/colors.dart';
 import 'package:clipnote/model/myNoteModel.dart';
 import 'package:clipnote/searchPage.dart';
+import 'package:clipnote/services/account_switcher.dart';
 import 'package:clipnote/services/auth.dart';
 import 'package:clipnote/services/db.dart';
 import 'package:clipnote/services/firestore_db.dart';
@@ -13,6 +14,7 @@ import 'package:clipnote/noteView.dart';
 import 'package:clipnote/createNoteView.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:clipnote/login.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -27,6 +29,19 @@ class _HomeState extends State<Home> {
   late List<Note> notesList = [];
   late String? imgUrl;
   final GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
+
+  Future<List<GoogleSignInAccount>> getGoogleAccounts() async {
+    try {
+      await googleSignIn
+          .signInSilently(); // Attempt to sign in silently to retrieve accounts
+      return googleSignIn.currentUser != null
+          ? [googleSignIn.currentUser!]
+          : [];
+    } catch (error) {
+      print(error);
+      return [];
+    }
+  }
 
   Future<void> createEntry(Note note) async {
     await NotesDatabase.instance.insertEntry(note);
@@ -97,31 +112,38 @@ class _HomeState extends State<Home> {
         : Scaffold(
             floatingActionButton: FloatingActionButton(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(40)),
+                borderRadius: BorderRadius.circular(20),
+              ),
               onPressed: () async {
-                await Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => CreateNoteview()));
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CreateNoteview(),
+                  ),
+                );
                 await getAllNotes(); // Update the list after returning from CreateNoteView
               },
-              backgroundColor: cardColor,
-              child: Icon(
+              backgroundColor:
+                  Colors.amber, // Set your desired background color here
+              elevation: 4, // Adjust the elevation for a subtle shadow
+              child: const Icon(
                 Icons.add,
-                color: white,
-                size: 36,
+                color: Colors.white,
+                size: 32,
               ),
             ),
             endDrawerEnableOpenDragGesture: true,
             key: _drawerKey,
-            drawer: SideMenu(),
+            drawer: const SideMenu(),
             backgroundColor: bgColor,
             body: SafeArea(
               child: SingleChildScrollView(
-                physics: BouncingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
                 child: Column(
                   children: [
                     Container(
-                      margin:
-                          EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 10),
                       width: MediaQuery.of(context).size.width,
                       height: 55,
                       decoration: BoxDecoration(
@@ -138,47 +160,53 @@ class _HomeState extends State<Home> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            children: [
-                              IconButton(
-                                onPressed: () {
-                                  _drawerKey.currentState!.openDrawer();
-                                },
-                                icon: Icon(
-                                  Icons.menu,
-                                  color: white,
-                                ),
-                              ),
-                              SizedBox(width: 16),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              SearchPage())); // Corrected to SearchPage()
-                                },
-                                child: SizedBox(
-                                  height: 55,
-                                  width:
-                                      MediaQuery.of(context).size.width / 1.95,
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Search your notes",
-                                        style: TextStyle(
-                                          color: white.withOpacity(0.5),
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                    ],
+                          Expanded(
+                            child: Row(
+                              children: [
+                                IconButton(
+                                  onPressed: () {
+                                    _drawerKey.currentState!.openDrawer();
+                                  },
+                                  icon: const Icon(
+                                    Icons.menu,
+                                    color: white,
                                   ),
                                 ),
-                              ),
-                            ],
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  flex: 3,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const SearchPage())); // Corrected to SearchPage()
+                                    },
+                                    child: SizedBox(
+                                      height: 55,
+                                      width: MediaQuery.of(context).size.width /
+                                          1.95,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Search your notes",
+                                            style: TextStyle(
+                                              color: white.withOpacity(0.5),
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                           Row(
                             children: [
@@ -188,10 +216,6 @@ class _HomeState extends State<Home> {
                                     isStaggered = !isStaggered;
                                   });
                                 },
-                                child: Icon(
-                                  isStaggered ? Icons.list : Icons.grid_view,
-                                  color: white,
-                                ),
                                 style: ButtonStyle(
                                   overlayColor: WidgetStateProperty.resolveWith(
                                     (states) => white.withOpacity(0.1),
@@ -203,24 +227,36 @@ class _HomeState extends State<Home> {
                                     ),
                                   ),
                                 ),
+                                child: Icon(
+                                  isStaggered ? Icons.list : Icons.grid_view,
+                                  color: white,
+                                ),
                               ),
-                              SizedBox(width: 9),
-                              GestureDetector(
-                                onTap: () {
-                                  signOut();
-                                  LocalDataSaver.saveLoginData(false);
-                                  Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => Login()));
-                                },
-                                child: CircleAvatar(
-                                  onBackgroundImageError: (Object, StackTrace) {
-                                    print("OK");
+                              const SizedBox(width: 9),
+                              Container(
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                child: InkWell(
+                                  onTap: () async {
+                                    final List<GoogleSignInAccount> accounts =
+                                        await getGoogleAccounts();
+
+                                    showModalBottomSheet(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AccountSwitcher(
+                                            accounts: accounts);
+                                      },
+                                    );
                                   },
-                                  radius: 16,
-                                  backgroundImage:
-                                      NetworkImage(imgUrl.toString()),
+                                  child: CircleAvatar(
+                                    radius: 16,
+                                    backgroundImage: imgUrl != null
+                                        ? NetworkImage(imgUrl!)
+                                        : Image.asset('images/googleLogo.png')
+                                            .image,
+                                    backgroundColor: Colors.grey,
+                                  ),
                                 ),
                               ),
                             ],
@@ -230,9 +266,9 @@ class _HomeState extends State<Home> {
                     ),
                     Container(
                       alignment: Alignment.centerLeft,
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      margin:
-                          EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 25, vertical: 10),
                       child: Text(
                         "ALL",
                         style: TextStyle(
@@ -244,20 +280,65 @@ class _HomeState extends State<Home> {
                     ),
                     if (notesList.isEmpty)
                       Container(
-                        margin: EdgeInsets.symmetric(vertical: 10),
+                        margin: const EdgeInsets.symmetric(vertical: 20),
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: cardColor,
+                          borderRadius: BorderRadius.circular(15),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              spreadRadius: 1,
+                              blurRadius: 3,
+                            ),
+                          ],
+                        ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
-                              Icons.lightbulb_outlined,
-                              color: white,
-                              size: 40,
+                            const Icon(
+                              Icons.note_add,
+                              color: Colors.orangeAccent,
+                              size: 50,
                             ),
-                            SizedBox(height: 10),
+                            const SizedBox(height: 15),
                             Text(
-                              "Notes you add appear here",
+                              "No notes yet!",
                               style: TextStyle(
-                                color: white,
+                                color: white.withOpacity(0.9),
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              "Your notes will appear here.",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: white.withOpacity(0.6),
+                                fontSize: 16,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            CreateNoteview()));
+                                // Add your note creation logic here
+                              },
+                              icon: Icon(Icons.add, color: white),
+                              label: Text(
+                                "Create a Note",
+                                style: TextStyle(color: white),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.orangeAccent,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30.0),
+                                ),
                               ),
                             ),
                           ],
@@ -311,7 +392,7 @@ class _HomeState extends State<Home> {
         }
       },
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+        margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
         padding: const EdgeInsets.all(10.0),
         decoration: BoxDecoration(
           color: cardColor,
@@ -329,18 +410,18 @@ class _HomeState extends State<Home> {
           children: [
             Text(
               notesList[index].title,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
             ),
-            SizedBox(height: 10.0),
+            const SizedBox(height: 10.0),
             Text(
               notesList[index].content.length > 250
                   ? notesList[index].content.substring(0, 250)
                   : notesList[index].content,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14.0,
                 color: Colors.white,
               ),
