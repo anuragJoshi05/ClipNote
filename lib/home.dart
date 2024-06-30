@@ -326,11 +326,11 @@ class _HomeState extends State<Home> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            CreateNoteview()));
+                                            const CreateNoteview()));
                                 // Add your note creation logic here
                               },
-                              icon: Icon(Icons.add, color: white),
-                              label: Text(
+                              icon: const Icon(Icons.add, color: white),
+                              label: const Text(
                                 "Create a Note",
                                 style: TextStyle(color: white),
                               ),
@@ -386,9 +386,7 @@ class _HomeState extends State<Home> {
           ),
         );
         if (updatedNote != null) {
-          setState(() {
-            notesList[index] = updatedNote; // Update the list in the UI
-          });
+          await getAllNotes(); // Refresh the notes list after returning from NoteView
         }
       },
       child: Container(
@@ -405,30 +403,48 @@ class _HomeState extends State<Home> {
             ),
           ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Stack(
           children: [
-            Text(
-              notesList[index].title,
-              style: const TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20.0), // Adjust padding to avoid collision
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    notesList[index].title,
+                    style: const TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 10.0),
+                  Text(
+                    notesList[index].content.length > 250
+                        ? notesList[index].content.substring(0, 250)
+                        : notesList[index].content,
+                    style: const TextStyle(
+                      fontSize: 14.0,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 10.0),
-            Text(
-              notesList[index].content.length > 250
-                  ? notesList[index].content.substring(0, 250)
-                  : notesList[index].content,
-              style: const TextStyle(
-                fontSize: 14.0,
-                color: Colors.white,
+            if (notesList[index].pin)
+              const Positioned(
+
+                bottom: 0,
+                child: Icon(
+                  Icons.push_pin,
+                  color: Colors.orangeAccent, // Adjust the color as needed
+                  size: 18, // Adjust the size as needed
+                ),
               ),
-            ),
           ],
         ),
       ),
     );
   }
+
 }
