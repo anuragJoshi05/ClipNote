@@ -53,8 +53,8 @@ class SideMenu extends StatelessWidget {
                     ),
                     _buildMenuItem(
                       context,
-                      icon: Icons.archive_outlined,
-                      label: "Archive",
+                      icon: Icons.star_border,
+                      label: "Starred",
                       destination: ArchieveView(),
                     ),
                     _buildMenuItem(
