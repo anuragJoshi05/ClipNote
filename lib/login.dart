@@ -27,6 +27,7 @@ class _LoginState extends State<Login> {
       throw 'Could not launch $url';
     }
   }
+
   Future<void> _signInWithGoogle() async {
     await signInWithGoogle();
     final User? currentUser = await _auth.currentUser;
@@ -41,6 +42,7 @@ class _LoginState extends State<Login> {
       MaterialPageRoute(builder: (context) => const Home()),
     );
   }
+
   @override
   void initState() {
     super.initState();
