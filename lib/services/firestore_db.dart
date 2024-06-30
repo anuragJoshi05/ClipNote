@@ -19,6 +19,9 @@ class FireDB {
         "uniqueID": note.uniqueID,
         "Content": note.content,
         "CreatedAt": note.createdTime,
+        "isArchieve": note.isArchieve,
+        "pin": note.pin,
+
       }).then((_) {
         print("Note added successfully");
       }).catchError((error) {
@@ -45,8 +48,8 @@ class FireDB {
           uniqueID: note["uniqueID"],
           content: note["Content"],
           createdTime: note["CreatedAt"].toDate(),
-          pin: note["pin"] ?? false,
-          isArchieve: note["archive"] ?? false,
+          pin: note["pin"],
+          isArchieve: note["isArchieve"],
         ));
       });
     }
@@ -72,6 +75,8 @@ class FireDB {
       await noteRef.update({
         "Title": note.title,
         "Content": note.content,
+        "isArchieve": note.isArchieve,
+        "pin": note.pin,
       }).then((_) {
         print("Note updated successfully");
       }).catchError((error) {
