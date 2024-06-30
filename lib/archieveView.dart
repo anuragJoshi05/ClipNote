@@ -1,12 +1,14 @@
 import 'package:clipnote/SideMenuBar.dart';
 import 'package:clipnote/colors.dart';
 import 'package:clipnote/services/auth.dart';
+import 'package:clipnote/services/firestore_db.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:clipnote/noteView.dart';
 import 'package:clipnote/createNoteView.dart';
 import 'package:clipnote/model/myNoteModel.dart';
-import 'package:clipnote/services/db.dart';
+
 import 'package:clipnote/searchPage.dart';
 import 'package:clipnote/services/loginInfo.dart';
 import 'package:clipnote/login.dart';
@@ -14,7 +16,7 @@ import 'package:clipnote/login.dart';
 import 'home.dart';
 
 class ArchieveView extends StatefulWidget {
-  ArchieveView({super.key});
+  const ArchieveView({super.key});
 
   @override
   State<ArchieveView> createState() => _ArchieveViewState();
@@ -35,8 +37,14 @@ class _ArchieveViewState extends State<ArchieveView> {
         });
       }
     });
-    notesList = await NotesDatabase.instance.readAllNotes();
-    notesList = notesList.where((note) => note.isArchieve).toList();
+
+    // Fetch archived notes from Firestore
+    final userEmail = FirebaseAuth.instance.currentUser?.email;
+    if (userEmail != null) {
+      notesList = await FireDB().getAllStoredNotesForUser(userEmail);
+      notesList = notesList.where((note) => note.isArchieve).toList();
+    }
+
     if (this.mounted) {
       setState(() {
         isLoading = false;
@@ -66,8 +74,10 @@ class _ArchieveViewState extends State<ArchieveView> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(40)),
               onPressed: () async {
-                await Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const CreateNoteview()));
+                await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const CreateNoteview()));
                 await getAllArchievedNotes(); // Update the list after returning from CreateNoteView
               },
               backgroundColor: cardColor,
@@ -87,8 +97,8 @@ class _ArchieveViewState extends State<ArchieveView> {
                 child: Column(
                   children: [
                     Container(
-                      margin:
-                          const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 10),
                       width: MediaQuery.of(context).size.width,
                       height: 55,
                       decoration: BoxDecoration(
@@ -198,10 +208,10 @@ class _ArchieveViewState extends State<ArchieveView> {
                     Container(
                       alignment: Alignment.centerLeft,
                       padding: const EdgeInsets.symmetric(horizontal: 10),
-                      margin:
-                          const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 25, vertical: 10),
                       child: Text(
-                        "ARCHIVED",
+                        "STARRED",
                         style: TextStyle(
                           color: white.withOpacity(0.5),
                           fontSize: 13,
@@ -228,13 +238,13 @@ class _ArchieveViewState extends State<ArchieveView> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const Icon(
-                              Icons.archive_outlined,
-                              color: Colors.blueAccent,
+                              Icons.star_border_outlined,
+                              color: Colors.orange,
                               size: 50,
                             ),
                             const SizedBox(height: 15),
                             Text(
-                              "No Archived Notes",
+                              "No Starred Notes",
                               style: TextStyle(
                                 color: white.withOpacity(0.9),
                                 fontSize: 20,
@@ -243,7 +253,7 @@ class _ArchieveViewState extends State<ArchieveView> {
                             ),
                             const SizedBox(height: 10),
                             Text(
-                              "Your archived notes will appear here.",
+                              "Your starred notes will appear here.",
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: white.withOpacity(0.6),
@@ -265,7 +275,7 @@ class _ArchieveViewState extends State<ArchieveView> {
                                 style: TextStyle(color: white),
                               ),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blueAccent,
+                                backgroundColor: Colors.orange,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(30.0),
                                 ),
@@ -316,9 +326,7 @@ class _ArchieveViewState extends State<ArchieveView> {
           ),
         );
         if (updatedNote != null) {
-          setState(() {
-            notesList[index] = updatedNote; // Update the list in the UI
-          });
+          await getAllArchievedNotes(); // Refresh the notes list after returning from NoteView
         }
       },
       child: Container(
