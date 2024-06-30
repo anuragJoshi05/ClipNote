@@ -1,3 +1,4 @@
+import 'package:clipnote/services/firestore_db.dart';
 import 'package:flutter/material.dart';
 import 'package:clipnote/archieveView.dart';
 import 'package:clipnote/home.dart';
@@ -16,13 +17,100 @@ class NoteView extends StatefulWidget {
   State<NoteView> createState() => _NoteViewState();
 }
 
-class _NoteViewState extends State<NoteView> {
+class _NoteViewState extends State<NoteView>
+    with SingleTickerProviderStateMixin {
   late Note _note;
+  late AnimationController _controller;
+  late Animation<double> _animation;
+  bool _isLoading = false; // Track loading state
 
   @override
   void initState() {
     super.initState();
     _note = widget.note;
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _animation = Tween<double>(begin: 1.0, end: 1.2)
+        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> _updateNoteArchiveStatus() async {
+    setState(() {
+      _isLoading = true;
+    });
+    _controller.forward().then((_) => _controller.reverse());
+
+    final updatedNote = _note.copy(isArchieve: !_note.isArchieve);
+    await NotesDatabase.instance.updateNote(updatedNote);
+    await FireDB().updateNoteFirestore(updatedNote); // Update Firestore
+
+    setState(() {
+      _note = updatedNote;
+      _isLoading = false;
+    });
+
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => const Home()));
+  }
+
+  Future<void> _updateNotePinStatus() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final updatedNote = _note.copy(pin: !_note.pin);
+    await NotesDatabase.instance.updateNote(updatedNote);
+
+    setState(() {
+      _note = updatedNote;
+      _isLoading = false;
+    });
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const Home()));
+
+
+  }
+
+  Future<void> _deleteNote() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    await NotesDatabase.instance.deleteNote(_note);
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const Home())); // Signal to refresh
+  }
+
+  Future<void> _editNote() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final updatedNote = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => EditNoteView(note: _note)),
+    );
+    if (updatedNote != null) {
+      setState(() {
+        _note = updatedNote;
+        _isLoading = false;
+      });
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -30,106 +118,84 @@ class _NoteViewState extends State<NoteView> {
     return Scaffold(
       backgroundColor: bgColor,
       appBar: AppBar(
-        iconTheme: IconThemeData(color: white),
+        iconTheme: const IconThemeData(color: white),
         backgroundColor: bgColor,
         actions: [
-          IconButton(
-            icon: Icon(
-              _note.isArchieve ? Icons.archive : Icons.archive_outlined,
-              color: _note.isArchieve ? Colors.red : Colors.white,
+          ScaleTransition(
+            scale: _animation,
+            child: IconButton(
+              icon: Icon(
+                _note.isArchieve ? Icons.star : Icons.star_outlined,
+                color: _note.isArchieve ? Colors.yellow : Colors.white,
+              ),
+              onPressed: _updateNoteArchiveStatus,
             ),
-            onPressed: () async {
-              final updatedNote = _note.copy(isArchieve: !_note.isArchieve);
-              await NotesDatabase.instance.updateNote(updatedNote);
-
-              setState(() {
-                _note = updatedNote;
-              });
-
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => ArchieveView()),
-              );
-            },
           ),
           IconButton(
             icon: Icon(
               _note.pin ? Icons.push_pin : Icons.push_pin_outlined,
               color: _note.pin ? Colors.red : Colors.white,
             ),
-            onPressed: () async {
-              final updatedNote = _note.copy(pin: !_note.pin);
-              await NotesDatabase.instance.updateNote(updatedNote);
-
-              setState(() {
-                _note = updatedNote;
-              });
-
-              Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (context) => Home()));
-            },
+            onPressed: _updateNotePinStatus,
           ),
           IconButton(
-            icon: Icon(Icons.delete_forever_outlined, color: white),
-            onPressed: () async {
-              await NotesDatabase.instance.deleteNote(_note);
-              Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (context) => Home()));
-            },
+            icon: const Icon(Icons.delete_forever_outlined, color: white),
+            onPressed: _deleteNote,
           ),
           IconButton(
-            icon: Icon(Icons.edit, color: white),
-            onPressed: () async {
-              final updatedNote = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => EditNoteView(note: _note)),
-              );
-              if (updatedNote != null) {
-                setState(() {
-                  _note = updatedNote;
-                });
-              }
-            },
+            icon: const Icon(Icons.edit, color: white),
+            onPressed: _editNote,
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Created on ${DateFormat.yMMMMEEEEd().format(widget.note.createdTime)}",
-                style: TextStyle(
-                  color: white,
-                ),
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Created on ${DateFormat.yMMMMEEEEd().format(widget.note.createdTime)}",
+                    style: const TextStyle(
+                      color: white,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    _note.title,
+                    style: const TextStyle(
+                        fontSize: 25,
+                        color: white,
+                        fontWeight: FontWeight.bold),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    _note.content,
+                    style: const TextStyle(
+                      fontSize: 17,
+                      color: white,
+                    ),
+                  ),
+                ],
               ),
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                _note.title,
-                style: TextStyle(
-                    fontSize: 25, color: white, fontWeight: FontWeight.bold),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 2,
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Text(
-                _note.content,
-                style: TextStyle(
-                  fontSize: 17,
-                  color: white,
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+          if (_isLoading)
+            const Center(
+              child: CircularProgressIndicator(
+                color: Colors.yellow,
+              ),
+            ),
+        ],
       ),
     );
   }
