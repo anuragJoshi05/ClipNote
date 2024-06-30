@@ -7,6 +7,7 @@ class Note {
   final String content;
   final DateTime createdTime;
 
+
   Note({
     this.id,
     required this.pin,
