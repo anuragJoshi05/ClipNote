@@ -121,6 +121,10 @@ class _NoteViewState extends State<NoteView>
         iconTheme: const IconThemeData(color: white),
         backgroundColor: bgColor,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.delete_forever_outlined, color: white),
+            onPressed: _deleteNote,
+          ),
           ScaleTransition(
             scale: _animation,
             child: IconButton(
@@ -137,10 +141,6 @@ class _NoteViewState extends State<NoteView>
               color: _note.pin ? Colors.red : Colors.white,
             ),
             onPressed: _updateNotePinStatus,
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete_forever_outlined, color: white),
-            onPressed: _deleteNote,
           ),
         ],
       ),
