@@ -1,6 +1,5 @@
 import 'package:clipnote/services/firestore_db.dart';
 import 'package:flutter/material.dart';
-import 'package:clipnote/archieveView.dart';
 import 'package:clipnote/home.dart';
 import 'package:clipnote/editNoteView.dart';
 import 'package:clipnote/model/myNoteModel.dart';
@@ -11,7 +10,7 @@ import 'package:intl/intl.dart';
 class NoteView extends StatefulWidget {
   final Note note;
 
-  NoteView({required this.note});
+  const NoteView({super.key, required this.note});
 
   @override
   State<NoteView> createState() => _NoteViewState();
@@ -22,7 +21,7 @@ class _NoteViewState extends State<NoteView>
   late Note _note;
   late AnimationController _controller;
   late Animation<double> _animation;
-  bool _isLoading = false; // Track loading state
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -50,7 +49,7 @@ class _NoteViewState extends State<NoteView>
 
     final updatedNote = _note.copy(isArchieve: !_note.isArchieve);
     await NotesDatabase.instance.updateNote(updatedNote);
-    await FireDB().updateNoteFirestore(updatedNote); // Update Firestore
+    await FireDB().updateNoteFirestore(updatedNote);
 
     setState(() {
       _note = updatedNote;
@@ -73,9 +72,9 @@ class _NoteViewState extends State<NoteView>
       _note = updatedNote;
       _isLoading = false;
     });
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const Home()));
 
-
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => const Home()));
   }
 
   Future<void> _deleteNote() async {
@@ -89,7 +88,8 @@ class _NoteViewState extends State<NoteView>
       _isLoading = false;
     });
 
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const Home())); // Signal to refresh
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => const Home()));
   }
 
   Future<void> _editNote() async {
@@ -142,10 +142,6 @@ class _NoteViewState extends State<NoteView>
             icon: const Icon(Icons.delete_forever_outlined, color: white),
             onPressed: _deleteNote,
           ),
-          IconButton(
-            icon: const Icon(Icons.edit, color: white),
-            onPressed: _editNote,
-          ),
         ],
       ),
       body: Stack(
@@ -195,6 +191,26 @@ class _NoteViewState extends State<NoteView>
                 color: Colors.yellow,
               ),
             ),
+        ],
+      ),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            heroTag: 'colorButton',
+            onPressed: () {
+              // Action for the color button
+            },
+            backgroundColor: Colors.yellow,
+            child: const Icon(Icons.color_lens),
+          ),
+          const SizedBox(height: 10),
+          FloatingActionButton(
+            heroTag: 'editButton',
+            onPressed: _editNote,
+            backgroundColor: Colors.blue,
+            child: const Icon(Icons.edit),
+          ),
         ],
       ),
     );
