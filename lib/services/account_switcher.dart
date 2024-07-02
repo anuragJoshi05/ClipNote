@@ -8,7 +8,7 @@ import 'package:clipnote/services/auth.dart';
 class AccountSwitcher extends StatefulWidget {
   final List<GoogleSignInAccount> accounts;
 
-  const AccountSwitcher({Key? key, required this.accounts}) : super(key: key);
+  const AccountSwitcher({super.key, required this.accounts});
 
   @override
   _AccountSwitcherState createState() => _AccountSwitcherState();
