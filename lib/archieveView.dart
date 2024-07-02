@@ -12,7 +12,6 @@ import 'package:clipnote/model/myNoteModel.dart';
 import 'package:clipnote/searchPage.dart';
 import 'package:clipnote/services/loginInfo.dart';
 import 'package:clipnote/login.dart';
-
 import 'home.dart';
 
 class ArchieveView extends StatefulWidget {
@@ -31,7 +30,7 @@ class _ArchieveViewState extends State<ArchieveView> {
 
   Future getAllArchievedNotes() async {
     LocalDataSaver.getImg().then((value) {
-      if (this.mounted) {
+      if (mounted) {
         setState(() {
           imgUrl = value;
         });
@@ -45,7 +44,7 @@ class _ArchieveViewState extends State<ArchieveView> {
       notesList = notesList.where((note) => note.isArchieve).toList();
     }
 
-    if (this.mounted) {
+    if (mounted) {
       setState(() {
         isLoading = false;
       });
@@ -170,10 +169,11 @@ class _ArchieveViewState extends State<ArchieveView> {
                                   color: white,
                                 ),
                                 style: ButtonStyle(
-                                  overlayColor: WidgetStateProperty.resolveWith(
+                                  overlayColor:
+                                      MaterialStateProperty.resolveWith(
                                     (states) => white.withOpacity(0.1),
                                   ),
-                                  shape: WidgetStateProperty.all<
+                                  shape: MaterialStateProperty.all<
                                       RoundedRectangleBorder>(
                                     RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(50.0),
@@ -317,16 +317,24 @@ class _ArchieveViewState extends State<ArchieveView> {
   }
 
   Widget _buildNoteItem(BuildContext context, int index) {
+    final note = notesList[index];
     return InkWell(
       onTap: () async {
         final updatedNote = await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => NoteView(note: notesList[index]),
+            builder: (context) => NoteView(
+              note: notesList[index],
+              onNoteUpdated: (Note updatedNote) {
+                setState(() {
+                  notesList[index] = updatedNote;
+                });
+              },
+            ),
           ),
         );
         if (updatedNote != null) {
-          await getAllArchievedNotes(); // Refresh the notes list after returning from NoteView
+          await getAllArchievedNotes(); // Fetch notes from Firestore after returning from NoteView
         }
       },
       child: Container(
@@ -342,28 +350,52 @@ class _ArchieveViewState extends State<ArchieveView> {
               blurRadius: 3,
             ),
           ],
+          image:
+          note.backgroundImage != null && note.backgroundImage!.isNotEmpty
+              ? DecorationImage(
+            image: AssetImage(note.backgroundImage!),
+            fit: BoxFit.cover,
+          )
+              : null,
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Stack(
           children: [
-            Text(
-              notesList[index].title,
-              style: const TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+            Padding(
+              padding: const EdgeInsets.only(
+                  bottom: 20.0), // Adjust padding to avoid collision
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    notesList[index].title,
+                    style: const TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 10.0),
+                  Text(
+                    notesList[index].content.length > 250
+                        ? notesList[index].content.substring(0, 250)
+                        : notesList[index].content,
+                    style: const TextStyle(
+                      fontSize: 14.0,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 10.0),
-            Text(
-              notesList[index].content.length > 250
-                  ? notesList[index].content.substring(0, 250)
-                  : notesList[index].content,
-              style: const TextStyle(
-                fontSize: 14.0,
-                color: Colors.white,
+            if (notesList[index].pin)
+              const Positioned(
+                bottom: 0,
+                child: Icon(
+                  Icons.push_pin,
+                  color: Colors.orangeAccent, // Adjust the color as needed
+                  size: 18, // Adjust the size as needed
+                ),
               ),
-            ),
           ],
         ),
       ),
