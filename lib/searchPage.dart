@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart'; // Ensure the correct package is imported
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:clipnote/colors.dart';
 import 'package:clipnote/services/db.dart';
 import 'noteView.dart';
@@ -72,10 +72,10 @@ class _SearchPageState extends State<SearchPage> {
                 ),
                 isLoading
                     ? Center(
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                        ),
-                      )
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                  ),
+                )
                     : noteSectionAll()
               ],
             ),
@@ -118,41 +118,46 @@ class _SearchPageState extends State<SearchPage> {
                 return note == null
                     ? SizedBox()
                     : InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => NoteView(note: note),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          padding: EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: white.withOpacity(0.4)),
-                            borderRadius: BorderRadius.circular(7),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                note.title,
-                                style: TextStyle(
-                                    color: white,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              SizedBox(height: 10),
-                              Text(
-                                note.content.length > 250
-                                    ? "${note.content.substring(0, 250)}..."
-                                    : note.content,
-                                style: TextStyle(color: white),
-                              ),
-                            ],
-                          ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NoteView(
+                          note: note,
+                          onNoteUpdated: (Note updatedNote) {
+                            // Empty callback for SearchPage context
+                          },
                         ),
-                      );
+                      ),
+                    );
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: white.withOpacity(0.4)),
+                      borderRadius: BorderRadius.circular(7),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          note.title,
+                          style: TextStyle(
+                              color: white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          note.content.length > 250
+                              ? "${note.content.substring(0, 250)}..."
+                              : note.content,
+                          style: TextStyle(color: white),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
               },
             ),
           ),
