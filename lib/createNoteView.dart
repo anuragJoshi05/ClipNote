@@ -15,13 +15,13 @@ class CreateNoteview extends StatefulWidget {
 class _CreateNoteviewState extends State<CreateNoteview> {
   TextEditingController title = TextEditingController();
   TextEditingController content = TextEditingController();
-  var uuid = Uuid();
+  var uuid = const Uuid();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: bgColor,
       appBar: AppBar(
-        iconTheme: IconThemeData(color: white),
+        iconTheme: const IconThemeData(color: white),
         backgroundColor: bgColor,
         actions: [
           IconButton(
@@ -34,23 +34,24 @@ class _CreateNoteviewState extends State<CreateNoteview> {
                   pin: false,
                   isArchieve: false,
                   createdTime: DateTime.now()));
+
               Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (context) => Home()));
+                  context, MaterialPageRoute(builder: (context) => const Home()));
             },
-            icon: Icon(Icons.save_outlined),
+            icon: const Icon(Icons.save_outlined),
           )
         ],
       ),
       body: SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         child: Container(
-          margin: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+          margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
           child: Column(
             children: [
               TextField(
                 cursorColor: white,
                 controller: title,
-                style: TextStyle(
+                style: const TextStyle(
                     fontSize: 25, color: white, fontWeight: FontWeight.bold),
                 decoration: InputDecoration(
                     border: InputBorder.none,
@@ -64,7 +65,7 @@ class _CreateNoteviewState extends State<CreateNoteview> {
                       color: Colors.grey.withOpacity(0.8),
                     )),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Container(
                 height: MediaQuery.of(context).size.height - 150,
                 child: TextField(
@@ -73,7 +74,7 @@ class _CreateNoteviewState extends State<CreateNoteview> {
                   minLines: 1,
                   maxLines: null,
                   cursorColor: white,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 17,
                     color: white,
                   ),
