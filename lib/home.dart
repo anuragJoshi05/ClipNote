@@ -12,8 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:clipnote/noteView.dart';
 import 'package:clipnote/createNoteView.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:clipnote/login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class Home extends StatefulWidget {
@@ -141,129 +139,132 @@ class _HomeState extends State<Home> {
                 physics: const BouncingScrollPhysics(),
                 child: Column(
                   children: [
-                    Container(
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 10),
-                      width: MediaQuery.of(context).size.width,
-                      height: 55,
-                      decoration: BoxDecoration(
-                        color: cardColor,
-                        borderRadius: BorderRadius.circular(15),
-                        boxShadow: [
-                          BoxShadow(
-                            color: black.withOpacity(0.2),
-                            spreadRadius: 1,
-                            blurRadius: 3,
-                          ),
-                        ],
-                      ),
+                Container(
+                margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                width: MediaQuery.of(context).size.width,
+                height: 55,
+                decoration: BoxDecoration(
+                  color: cardColor,
+                  borderRadius: BorderRadius.circular(25),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      spreadRadius: 1,
+                      blurRadius: 3,
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Expanded(
-                            child: Row(
-                              children: [
-                                IconButton(
-                                  onPressed: () {
-                                    _drawerKey.currentState!.openDrawer();
-                                  },
-                                  icon: const Icon(
-                                    Icons.menu,
-                                    color: white,
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  flex: 3,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const SearchPage())); // Corrected to SearchPage()
-                                    },
-                                    child: SizedBox(
-                                      height: 55,
-                                      width: MediaQuery.of(context).size.width /
-                                          1.95,
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            "Search your notes",
-                                            style: TextStyle(
-                                              color: white.withOpacity(0.5),
-                                              fontSize: 16,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
+                          IconButton(
+                            onPressed: () {
+                              _drawerKey.currentState!.openDrawer();
+                            },
+                            icon: const Icon(
+                              Icons.menu,
+                              color: Colors.white,
                             ),
                           ),
-                          Row(
-                            children: [
-                              TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    isStaggered = !isStaggered;
-                                  });
-                                },
-                                style: ButtonStyle(
-                                  overlayColor: WidgetStateProperty.resolveWith(
-                                    (states) => white.withOpacity(0.1),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const SearchPage(),
                                   ),
-                                  shape: WidgetStateProperty.all<
-                                      RoundedRectangleBorder>(
-                                    RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(50.0),
+                                );
+                              },
+                              child: Container(
+                                height: 40,
+                                padding: const EdgeInsets.symmetric(horizontal: 15),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.search,
+                                      color: Colors.grey[600],
                                     ),
-                                  ),
-                                ),
-                                child: Icon(
-                                  isStaggered ? Icons.list : Icons.grid_view,
-                                  color: white,
-                                ),
-                              ),
-                              const SizedBox(width: 9),
-                              Container(
-                                margin:
-                                    const EdgeInsets.symmetric(horizontal: 10),
-                                child: InkWell(
-                                  onTap: () async {
-                                    final List<GoogleSignInAccount> accounts =
-                                        await getGoogleAccounts();
-
-                                    showModalBottomSheet(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return AccountSwitcher(
-                                            accounts: accounts);
-                                      },
-                                    );
-                                  },
-                                  child: CircleAvatar(
-                                    radius: 16,
-                                    backgroundImage: imgUrl != null
-                                        ? NetworkImage(imgUrl!)
-                                        : Image.asset('images/googleLogo.png')
-                                            .image,
-                                    backgroundColor: Colors.grey,
-                                  ),
+                                    const SizedBox(width: 10),
+                                    Flexible(
+                                      child: Text(
+                                        "Search your notes",
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          color: Colors.grey[600],
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ],
+                            ),
                           ),
                         ],
                       ),
                     ),
+                    Row(
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            setState(() {
+                              isStaggered = !isStaggered;
+                            });
+                          },
+                          style: ButtonStyle(
+                            overlayColor: WidgetStateProperty.resolveWith(
+                                  (states) => Colors.white.withOpacity(0.1),
+                            ),
+                            shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(50.0),
+                              ),
+                            ),
+                          ),
+                          child: Icon(
+                            isStaggered ? Icons.list : Icons.grid_view,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(width: 9),
+                        Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 10),
+                          child: InkWell(
+                            onTap: () async {
+                              final List<GoogleSignInAccount> accounts =
+                              await getGoogleAccounts();
+
+                              showModalBottomSheet(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AccountSwitcher(accounts: accounts);
+                                },
+                              );
+                            },
+                            child: CircleAvatar(
+                              radius: 16,
+                              backgroundImage: imgUrl != null
+                                  ? NetworkImage(imgUrl!)
+                                  : Image.asset('images/googleLogo.png').image,
+                              backgroundColor: Colors.grey,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
                     Container(
                       alignment: Alignment.centerLeft,
                       padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -377,16 +378,24 @@ class _HomeState extends State<Home> {
   }
 
   Widget _buildNoteItem(BuildContext context, int index) {
+    final note = notesList[index];
     return InkWell(
       onTap: () async {
         final updatedNote = await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => NoteView(note: notesList[index]),
+            builder: (context) => NoteView(
+              note: notesList[index],
+              onNoteUpdated: (Note updatedNote) {
+                setState(() {
+                  notesList[index] = updatedNote;
+                });
+              },
+            ),
           ),
         );
         if (updatedNote != null) {
-          await getAllNotes(); // Refresh the notes list after returning from NoteView
+          await _fetchNotes(); // Fetch notes from Firestore after returning from NoteView
         }
       },
       child: Container(
@@ -402,11 +411,19 @@ class _HomeState extends State<Home> {
               blurRadius: 3,
             ),
           ],
+          image:
+              note.backgroundImage != null && note.backgroundImage!.isNotEmpty
+                  ? DecorationImage(
+                      image: AssetImage(note.backgroundImage!),
+                      fit: BoxFit.cover,
+                    )
+                  : null,
         ),
         child: Stack(
           children: [
             Padding(
-              padding: const EdgeInsets.only(bottom: 20.0), // Adjust padding to avoid collision
+              padding: const EdgeInsets.only(
+                  bottom: 20.0), // Adjust padding to avoid collision
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -433,7 +450,6 @@ class _HomeState extends State<Home> {
             ),
             if (notesList[index].pin)
               const Positioned(
-
                 bottom: 0,
                 child: Icon(
                   Icons.push_pin,
@@ -446,5 +462,4 @@ class _HomeState extends State<Home> {
       ),
     );
   }
-
 }
