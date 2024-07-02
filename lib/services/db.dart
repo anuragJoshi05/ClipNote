@@ -21,32 +21,42 @@ class NotesDatabase {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    return await openDatabase(path,
-        version: 2, onCreate: _createDB, onUpgrade: _upgradeDB);
+    return await openDatabase(
+      path,
+      version: 3, // Ensure version is 3 to trigger the onUpgrade
+      onCreate: _createDB,
+      onUpgrade: _upgradeDB,
+    );
   }
 
   Future _createDB(Database db, int version) async {
     const idType = 'INTEGER PRIMARY KEY AUTOINCREMENT';
     const boolType = 'BOOLEAN NOT NULL';
     const textType = 'TEXT NOT NULL';
+    const nullableTextType = 'TEXT';
 
     await db.execute('''
-  CREATE TABLE $tableNotes ( 
-    ${NoteFields.id} $idType, 
-    ${NoteFields.uniqueID} $textType,
-    ${NoteFields.pin} $boolType,
-    ${NoteFields.isArchieve} $boolType,
-    ${NoteFields.title} $textType,
-    ${NoteFields.content} $textType,
-    ${NoteFields.createdTime} $textType
+    CREATE TABLE $tableNotes ( 
+      ${NoteFields.id} $idType, 
+      ${NoteFields.uniqueID} $textType,
+      ${NoteFields.pin} $boolType,
+      ${NoteFields.isArchieve} $boolType,
+      ${NoteFields.title} $textType,
+      ${NoteFields.content} $textType,
+      ${NoteFields.createdTime} $textType,
+      ${NoteFields.backgroundImage} $nullableTextType
     )
-  ''');
+    ''');
   }
 
   Future _upgradeDB(Database db, int oldVersion, int newVersion) async {
     if (oldVersion < 2) {
       await db.execute(
           'ALTER TABLE $tableNotes ADD COLUMN ${NoteFields.isArchieve} BOOLEAN NOT NULL DEFAULT 0');
+    }
+    if (oldVersion < 3) {
+      await db.execute(
+          'ALTER TABLE $tableNotes ADD COLUMN ${NoteFields.backgroundImage} TEXT');
     }
   }
 
