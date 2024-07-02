@@ -1,3 +1,4 @@
+import 'package:clipnote/backgroundSwitcher.dart';
 import 'package:clipnote/services/firestore_db.dart';
 import 'package:flutter/material.dart';
 import 'package:clipnote/home.dart';
@@ -9,19 +10,34 @@ import 'package:intl/intl.dart';
 
 class NoteView extends StatefulWidget {
   final Note note;
+  final Function(Note) onNoteUpdated;
 
-  const NoteView({super.key, required this.note});
+  const NoteView({super.key, required this.note, required this.onNoteUpdated});
 
   @override
   State<NoteView> createState() => _NoteViewState();
 }
 
-class _NoteViewState extends State<NoteView>
-    with SingleTickerProviderStateMixin {
+class _NoteViewState extends State<NoteView> with SingleTickerProviderStateMixin {
   late Note _note;
   late AnimationController _controller;
   late Animation<double> _animation;
   bool _isLoading = false;
+  String? _backgroundImage;
+
+  List<String> backgrounds = [
+    "default",
+    "images/bg1.jpg",
+    "images/bg2.jpg",
+    "images/bg3.jpg",
+    "images/bg4.jpg",
+    "images/bg5.jpg",
+    "images/bg6.jpg",
+    "images/bg7.jpg",
+    "images/bg8.jpg",
+    "images/bg9.jpg",
+    "images/bg10.jpg"
+  ];
 
   @override
   void initState() {
@@ -33,6 +49,9 @@ class _NoteViewState extends State<NoteView>
     );
     _animation = Tween<double>(begin: 1.0, end: 1.2)
         .animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+
+    // Load the background image from the note
+    _backgroundImage = _note.backgroundImage;
   }
 
   @override
@@ -99,13 +118,14 @@ class _NoteViewState extends State<NoteView>
 
     final updatedNote = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => EditNoteView(note: _note)),
+      MaterialPageRoute(builder: (context) => EditNoteView(note: _note, backgroundImage: _backgroundImage)),
     );
     if (updatedNote != null) {
       setState(() {
         _note = updatedNote;
         _isLoading = false;
       });
+      widget.onNoteUpdated(updatedNote);
     } else {
       setState(() {
         _isLoading = false;
@@ -113,84 +133,126 @@ class _NoteViewState extends State<NoteView>
     }
   }
 
+
+  Future<void> _changeBackground() async {
+    final selectedBackground = await showModalBottomSheet<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return BackgroundSwitcher(
+          backgrounds: backgrounds,
+        );
+      },
+    );
+
+    if (selectedBackground != null) {
+      setState(() {
+        _backgroundImage = selectedBackground == "default" ? "" : selectedBackground;
+      });
+
+      final updatedNote = _note.copy(backgroundImage: _backgroundImage);
+      await NotesDatabase.instance.updateNote(updatedNote);
+      await FireDB().updateNoteFirestore(updatedNote);
+      widget.onNoteUpdated(updatedNote);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: bgColor,
-      appBar: AppBar(
-        iconTheme: const IconThemeData(color: white),
-        backgroundColor: bgColor,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.delete_forever_outlined, color: white),
-            onPressed: _deleteNote,
-          ),
-          ScaleTransition(
-            scale: _animation,
-            child: IconButton(
-              icon: Icon(
-                _note.isArchieve ? Icons.star : Icons.star_outlined,
-                color: _note.isArchieve ? Colors.yellow : Colors.white,
-              ),
-              onPressed: _updateNoteArchiveStatus,
-            ),
-          ),
-          IconButton(
-            icon: Icon(
-              _note.pin ? Icons.push_pin : Icons.push_pin_outlined,
-              color: _note.pin ? Colors.red : Colors.white,
-            ),
-            onPressed: _updateNotePinStatus,
-          ),
-        ],
-      ),
+      backgroundColor: _backgroundImage == null || _backgroundImage!.isEmpty ? bgColor : null,
       body: Stack(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Created on ${DateFormat.yMMMMEEEEd().format(widget.note.createdTime)}",
-                    style: const TextStyle(
-                      color: white,
+          if (_backgroundImage != null && _backgroundImage!.isNotEmpty)
+            Positioned.fill(
+              child: Image.asset(
+                _backgroundImage!,
+                fit: BoxFit.cover,
+              ),
+            ),
+          Column(
+            children: [
+              AppBar(
+                iconTheme: const IconThemeData(color: white),
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                actions: [
+                  IconButton(
+                    icon:
+                    const Icon(Icons.delete_forever_outlined, color: white),
+                    onPressed: _deleteNote,
+                  ),
+                  ScaleTransition(
+                    scale: _animation,
+                    child: IconButton(
+                      icon: Icon(
+                        _note.isArchieve ? Icons.star : Icons.star_outlined,
+                        color: _note.isArchieve ? Colors.yellow : Colors.white,
+                      ),
+                      onPressed: _updateNoteArchiveStatus,
                     ),
                   ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    _note.title,
-                    style: const TextStyle(
-                        fontSize: 25,
-                        color: white,
-                        fontWeight: FontWeight.bold),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Text(
-                    _note.content,
-                    style: const TextStyle(
-                      fontSize: 17,
-                      color: white,
+                  IconButton(
+                    icon: Icon(
+                      _note.pin ? Icons.push_pin : Icons.push_pin_outlined,
+                      color: _note.pin ? Colors.red : Colors.white,
                     ),
+                    onPressed: _updateNotePinStatus,
                   ),
                 ],
               ),
-            ),
-          ),
-          if (_isLoading)
-            const Center(
-              child: CircularProgressIndicator(
-                color: Colors.yellow,
+              Expanded(
+                child: Stack(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: SingleChildScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Created on ${DateFormat.yMMMMEEEEd().format(widget.note.createdTime)}",
+                              style: const TextStyle(
+                                color: white,
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              _note.title,
+                              style: const TextStyle(
+                                  fontSize: 25,
+                                  color: white,
+                                  fontWeight: FontWeight.bold),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Text(
+                              _note.content,
+                              style: const TextStyle(
+                                fontSize: 17,
+                                color: white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    if (_isLoading)
+                      const Center(
+                        child: CircularProgressIndicator(
+                          color: Colors.yellow,
+                        ),
+                      ),
+                  ],
+                ),
               ),
-            ),
+            ],
+          ),
         ],
       ),
       floatingActionButton: Column(
@@ -198,9 +260,7 @@ class _NoteViewState extends State<NoteView>
         children: [
           FloatingActionButton(
             heroTag: 'colorButton',
-            onPressed: () {
-              // Action for the color button
-            },
+            onPressed: _changeBackground,
             backgroundColor: Colors.yellow,
             child: const Icon(Icons.color_lens),
           ),
