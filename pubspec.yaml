@@ -51,6 +51,7 @@ dependencies:
   intl: ^0.19.0
   url_launcher: ^6.3.0
   font_awesome_flutter: ^10.7.0
+  flutter_colorpicker: ^1.1.0
 
 
 dev_dependencies:
@@ -78,6 +79,16 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
    - images/googleLogo.png
+   - images/bg1.jpg
+   - images/bg2.jpg
+   - images/bg3.jpg
+   - images/bg4.jpg
+   - images/bg5.jpg
+   - images/bg6.jpg
+   - images/bg7.jpg
+   - images/bg8.jpg
+   - images/bg9.jpg
+   - images/bg10.jpg
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
