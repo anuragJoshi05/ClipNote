@@ -21,6 +21,7 @@ class FireDB {
         "CreatedAt": note.createdTime,
         "isArchieve": note.isArchieve,
         "pin": note.pin,
+        "backgroundImage": note.backgroundImage ?? "", // Set default value to ""
 
       }).then((_) {
         print("Note added successfully");
@@ -50,6 +51,7 @@ class FireDB {
           createdTime: note["CreatedAt"].toDate(),
           pin: note["pin"],
           isArchieve: note["isArchieve"],
+          backgroundImage: note["backgroundImage"], // Handle the backgroundImage field
         ));
       });
     }
@@ -77,6 +79,7 @@ class FireDB {
         "Content": note.content,
         "isArchieve": note.isArchieve,
         "pin": note.pin,
+        "backgroundImage": note.backgroundImage, // New field
       }).then((_) {
         print("Note updated successfully");
       }).catchError((error) {
