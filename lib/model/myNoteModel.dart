@@ -6,7 +6,7 @@ class Note {
   final String uniqueID;
   final String content;
   final DateTime createdTime;
-
+  final String? backgroundImage; // New field
 
   Note({
     this.id,
@@ -16,6 +16,7 @@ class Note {
     required this.uniqueID,
     required this.content,
     required this.createdTime,
+    this.backgroundImage = "", // Default value set to ""
   });
 
   Note copy({
@@ -26,6 +27,7 @@ class Note {
     String? uniqueID,
     String? content,
     DateTime? createdTime,
+    String? backgroundImage, // New parameter in copy method
   }) {
     return Note(
       id: id ?? this.id,
@@ -35,6 +37,7 @@ class Note {
       content: content ?? this.content,
       uniqueID: uniqueID ?? this.uniqueID,
       createdTime: createdTime ?? this.createdTime,
+      backgroundImage: backgroundImage ?? this.backgroundImage, // Copy background image
     );
   }
 
@@ -47,6 +50,7 @@ class Note {
       content: json[NoteFields.content] as String,
       uniqueID: json[NoteFields.uniqueID] as String,
       createdTime: DateTime.parse(json[NoteFields.createdTime] as String),
+      backgroundImage: json[NoteFields.backgroundImage] as String?, // From JSON
     );
   }
 
@@ -57,8 +61,9 @@ class Note {
       NoteFields.isArchieve: isArchieve ? 1 : 0,
       NoteFields.title: title,
       NoteFields.content: content,
-      NoteFields.uniqueID:uniqueID,
+      NoteFields.uniqueID: uniqueID,
       NoteFields.createdTime: createdTime.toIso8601String(),
+      NoteFields.backgroundImage: backgroundImage, // To JSON
     };
   }
 }
@@ -71,7 +76,8 @@ class NoteFields {
     title,
     uniqueID,
     content,
-    createdTime
+    createdTime,
+    backgroundImage // Add new field
   ];
 
   static const String id = '_id';
@@ -81,4 +87,5 @@ class NoteFields {
   static const String title = 'title';
   static const String content = 'content';
   static const String createdTime = 'createdTime';
+  static const String backgroundImage = 'backgroundImage'; // New constant
 }
