@@ -13,8 +13,13 @@ ClipNote is a powerful and intuitive note-taking application, designed to be a n
 
 ## Screenshots
 
-
-
+<p>
+  <img src="https://github.com/anuragJoshi05/ClipNote/assets/148903459/0f236dff-b897-4421-98ff-26fcdc3e3215" width="150" />
+  <img src="https://github.com/anuragJoshi05/ClipNote/assets/148903459/f3d470c2-961f-4dcc-aa4e-b8417a35388b" width="150" />
+  <img src="https://github.com/anuragJoshi05/ClipNote/assets/148903459/5bf113f0-d289-4e71-b50f-ca02969994e5" width="150" />
+  <img src="https://github.com/anuragJoshi05/ClipNote/assets/148903459/a024e9aa-cbf6-4cfd-a2fc-228c44e23462" width="150" />
+  <img src="https://github.com/anuragJoshi05/ClipNote/assets/148903459/40477ab7-affe-4394-812c-4b75f9eac306" width="150" />
+</p>
 
 ## Getting Started
 
@@ -26,7 +31,6 @@ ClipNote is a powerful and intuitive note-taking application, designed to be a n
 ### Installation
 
 1. Clone the repository:
-
    ```bash
    git clone https://github.com/your-username/clipnote.git
    cd clipnote
