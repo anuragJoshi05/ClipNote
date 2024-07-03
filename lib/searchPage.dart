@@ -1,168 +1,143 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:clipnote/colors.dart';
-import 'package:clipnote/services/db.dart';
-import 'noteView.dart';
-import 'model/myNoteModel.dart';
+import 'package:clipnote/model/myNoteModel.dart';
+import 'package:clipnote/noteView.dart';
+import 'package:clipnote/services/firestore_db.dart';
+import 'package:flutter/material.dart';
 
 class SearchPage extends StatefulWidget {
-  const SearchPage({Key? key}) : super(key: key);
+  const SearchPage({super.key});
 
   @override
   _SearchPageState createState() => _SearchPageState();
 }
 
 class _SearchPageState extends State<SearchPage> {
-  List<Note?> searchResultNotes = [];
-  bool isLoading = false;
+  final TextEditingController _searchController = TextEditingController();
+  List<Note> _searchResults = [];
+  bool _isLoading = false;
 
-  void searchResults(String query) async {
+  void _searchNotes(String query) async {
     setState(() {
-      isLoading = true;
+      _isLoading = true;
     });
 
-    final resultNotes = await NotesDatabase.instance.searchNotes(query);
-    setState(() {
-      searchResultNotes = resultNotes;
-      isLoading = false;
-    });
+    try {
+      final FireDB fireDB = FireDB();
+      final String email = await fireDB.getCurrentUserEmail();
+      final List<Note> notes = await fireDB.getAllStoredNotesForUser(email);
+      List<Note> filteredNotes = notes.where((note) {
+        return note.title.toLowerCase().contains(query.toLowerCase()) ||
+            note.content.toLowerCase().contains(query.toLowerCase());
+      }).toList();
+
+      setState(() {
+        _searchResults = filteredNotes;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      // Handle error appropriately, e.g., show a snackbar
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: bgColor,
+        title: TextField(
+          controller: _searchController,
+          decoration: const InputDecoration(
+            hintText: 'Search notes...',
+            border: InputBorder.none,
+            hintStyle: TextStyle(color: Colors.white70),
+          ),
+          style: const TextStyle(color: Colors.white),
+          onChanged: (query) {
+            if (query.isNotEmpty) {
+              _searchNotes(query);
+            } else {
+              setState(() {
+                _searchResults = [];
+              });
+            }
+          },
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
       backgroundColor: bgColor,
-      body: SingleChildScrollView(
-        child: SafeArea(
-          child: Container(
-            decoration: BoxDecoration(color: white.withOpacity(0.1)),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: Icon(Icons.arrow_back_outlined),
-                      color: white,
-                    ),
-                    Expanded(
-                      child: TextField(
-                        textInputAction: TextInputAction.search,
-                        style: TextStyle(color: Colors.white),
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          errorBorder: InputBorder.none,
-                          disabledBorder: InputBorder.none,
-                          hintText: "Search Your Notes",
-                          hintStyle: TextStyle(
-                              color: white.withOpacity(0.5), fontSize: 16),
-                        ),
-                        onSubmitted: (value) {
-                          setState(() {
-                            searchResults(value.toLowerCase());
-                          });
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                isLoading
-                    ? Center(
-                  child: CircularProgressIndicator(
-                    color: Colors.white,
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(
+                color: Colors.white,
+              ),
+            )
+          : _searchResults.isEmpty
+              ? const Center(
+                  child: Text(
+                    'No results found.',
+                    style: TextStyle(color: Colors.white70, fontSize: 18),
                   ),
                 )
-                    : noteSectionAll()
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget noteSectionAll() {
-    return Container(
-      child: Column(
-        children: [
-          Container(
-            margin: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text(
-                  "SEARCH RESULTS",
-                  style: TextStyle(
-                      color: white.withOpacity(0.5),
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-            child: MasonryGridView.count(
-              physics: NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: searchResultNotes.length,
-              mainAxisSpacing: 12,
-              crossAxisSpacing: 12,
-              crossAxisCount: 2,
-              itemBuilder: (context, index) {
-                final note = searchResultNotes[index];
-                return note == null
-                    ? SizedBox()
-                    : InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => NoteView(
-                          note: note,
-                          onNoteUpdated: (Note updatedNote) {
-                            // Empty callback for SearchPage context
-                          },
+              : ListView.builder(
+                  itemCount: _searchResults.length,
+                  itemBuilder: (context, index) {
+                    final note = _searchResults[index];
+                    final backgroundImage = note.backgroundImage ??
+                        'images/default_bg.png'; // Default image
+                    return Container(
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage(backgroundImage),
+                          fit: BoxFit.cover,
+                          colorFilter: ColorFilter.mode(
+                            Colors.black.withOpacity(0.3),
+                            BlendMode.darken,
+                          ),
                         ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 5.0, horizontal: 10.0),
+                      child: ListTile(
+                        title: Text(
+                          note.title,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        subtitle: Text(
+                          note.content.length > 100
+                              ? '${note.content.substring(0, 100)}...'
+                              : note.content,
+                          style: const TextStyle(color: Colors.white70),
+                        ),
+                        onTap: () async {
+                          final updatedNote = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => NoteView(
+                                note: note,
+                                onNoteUpdated: (Note updatedNote) {
+                                  setState(() {
+                                    _searchResults[index] = updatedNote;
+                                  });
+                                },
+                              ),
+                            ),
+                          );
+                          if (updatedNote != null) {
+                            _searchNotes(_searchController
+                                .text); // Refresh search results
+                          }
+                        },
                       ),
                     );
                   },
-                  child: Container(
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: white.withOpacity(0.4)),
-                      borderRadius: BorderRadius.circular(7),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          note.title,
-                          style: TextStyle(
-                              color: white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          note.content.length > 250
-                              ? "${note.content.substring(0, 250)}..."
-                              : note.content,
-                          style: TextStyle(color: white),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
+                ),
     );
   }
 }
