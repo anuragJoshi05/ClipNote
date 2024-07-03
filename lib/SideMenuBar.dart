@@ -23,14 +23,14 @@ class SideMenu extends StatelessWidget {
                   children: [
                     Icon(
                       Icons.note_alt_outlined,
-                      color: white,
+                      color: Colors.green,
                       size: 30,
                     ),
                     SizedBox(width: 10),
                     Text(
                       "ClipNote",
                       style: TextStyle(
-                        color: white,
+                        color: Colors.grey,
                         fontWeight: FontWeight.bold,
                         fontSize: 24,
                       ),
@@ -55,7 +55,7 @@ class SideMenu extends StatelessWidget {
                       context,
                       icon: Icons.star_border,
                       label: "Starred",
-                      destination: ArchieveView(),
+                      destination: const ArchieveView(),
                     ),
                     _buildMenuItem(
                       context,
@@ -82,6 +82,8 @@ class SideMenu extends StatelessWidget {
   }) {
     final color =
         selected ? Colors.orangeAccent.withOpacity(0.7) : Colors.transparent;
+    final textColor = selected ? Colors.black87 : white.withOpacity(0.9);
+    final iconColor = selected ? Colors.black87 : white.withOpacity(0.9);
 
     return InkWell(
       onTap: () {
@@ -89,24 +91,24 @@ class SideMenu extends StatelessWidget {
             context, MaterialPageRoute(builder: (context) => destination));
       },
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 5),
+        margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
         padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
         decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular(5),
+          borderRadius: BorderRadius.circular(15),
         ),
         child: Row(
           children: [
             Icon(
               icon,
               size: 25,
-              color: white.withOpacity(0.9),
+              color: iconColor,
             ),
             const SizedBox(width: 20),
             Text(
               label,
               style: TextStyle(
-                color: white.withOpacity(0.9),
+                color: textColor,
                 fontSize: 18,
               ),
             ),
