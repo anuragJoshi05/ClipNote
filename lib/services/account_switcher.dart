@@ -1,5 +1,3 @@
-import 'package:clipnote/home.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:clipnote/login.dart';
@@ -31,6 +29,27 @@ class _AccountSwitcherState extends State<AccountSwitcher> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          const Row(
+            children: [
+              Icon(
+                Icons.note_alt_outlined,
+                color: Colors.green,
+                size: 30,
+              ),
+              SizedBox(width: 10),
+              Text(
+                "ClipNote",
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(
+              height:
+                  20), // Add some space between the header and the account list
           ..._accounts.map((account) {
             return Card(
               color: Colors.grey.shade900,
@@ -41,11 +60,11 @@ class _AccountSwitcherState extends State<AccountSwitcher> {
                 ),
                 title: Text(
                   account.displayName ?? '',
-                  style: TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Colors.white),
                 ),
                 subtitle: Text(
                   account.email,
-                  style: TextStyle(color: Colors.white70),
+                  style: const TextStyle(color: Colors.white70),
                 ),
                 onTap: () {
                   // Switch account logic (if any)
@@ -53,7 +72,6 @@ class _AccountSwitcherState extends State<AccountSwitcher> {
               ),
             );
           }).toList(),
-
           Card(
             color: Colors.grey.shade900,
             child: ListTile(
@@ -66,7 +84,7 @@ class _AccountSwitcherState extends State<AccountSwitcher> {
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        Login(), // Navigate to login screen after signing out
+                        const Login(), // Navigate to login screen after signing out
                   ),
                 );
               },
