@@ -37,7 +37,8 @@ class Note {
       content: content ?? this.content,
       uniqueID: uniqueID ?? this.uniqueID,
       createdTime: createdTime ?? this.createdTime,
-      backgroundImage: backgroundImage ?? this.backgroundImage, // Copy background image
+      backgroundImage:
+          backgroundImage ?? this.backgroundImage, // Copy background image
     );
   }
 
