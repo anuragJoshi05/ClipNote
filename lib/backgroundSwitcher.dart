@@ -12,7 +12,8 @@ class BackgroundSwitcher extends StatefulWidget {
   _BackgroundSwitcherState createState() => _BackgroundSwitcherState();
 }
 
-class _BackgroundSwitcherState extends State<BackgroundSwitcher> with SingleTickerProviderStateMixin {
+class _BackgroundSwitcherState extends State<BackgroundSwitcher>
+    with SingleTickerProviderStateMixin {
   late List<String> backgrounds;
   String? selectedBackground;
   late AnimationController _controller;
@@ -27,11 +28,13 @@ class _BackgroundSwitcherState extends State<BackgroundSwitcher> with SingleTick
       duration: const Duration(milliseconds: 300),
       vsync: this,
     )..repeat(reverse: true);
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.1).animate(CurvedAnimation(
+    _scaleAnimation =
+        Tween<double>(begin: 1.0, end: 1.1).animate(CurvedAnimation(
       parent: _controller,
       curve: Curves.easeInOut,
     ));
-    _glitterAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+    _glitterAnimation =
+        Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
       parent: _controller,
       curve: Curves.easeInOut,
     ));
@@ -86,10 +89,12 @@ class _BackgroundSwitcherState extends State<BackgroundSwitcher> with SingleTick
           const SizedBox(height: 16), // Add space before the button
           ElevatedButton(
             onPressed: () {
-              Navigator.pop(context, selectedBackground); // Pass the selected background back
+              Navigator.pop(context,
+                  selectedBackground); // Pass the selected background back
             },
             style: ElevatedButton.styleFrom(
-              foregroundColor: Colors.black, backgroundColor: Colors.yellow, // Text color
+              foregroundColor: Colors.black,
+              backgroundColor: Colors.yellow, // Text color
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30),
@@ -125,7 +130,9 @@ class _BackgroundSwitcherState extends State<BackgroundSwitcher> with SingleTick
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ScaleTransition(
-              scale: isSelected ? _scaleAnimation : AlwaysStoppedAnimation(1.0),
+              scale: isSelected
+                  ? _scaleAnimation
+                  : const AlwaysStoppedAnimation(1.0),
               child: Stack(
                 children: [
                   Container(
@@ -136,7 +143,8 @@ class _BackgroundSwitcherState extends State<BackgroundSwitcher> with SingleTick
                           color: Colors.black.withOpacity(0.5),
                           spreadRadius: 2,
                           blurRadius: 4,
-                          offset: const Offset(0, 3), // changes position of shadow
+                          offset:
+                              const Offset(0, 3), // changes position of shadow
                         ),
                       ],
                       shape: BoxShape.circle,
@@ -155,24 +163,25 @@ class _BackgroundSwitcherState extends State<BackgroundSwitcher> with SingleTick
                     child: CircleAvatar(
                       radius: 40, // Adjust the radius as needed
                       backgroundColor: background == "default" ? bgColor : null,
-                      backgroundImage:
-                      background != "default" ? AssetImage(background) : null,
+                      backgroundImage: background != "default"
+                          ? AssetImage(background)
+                          : null,
                       child: background == "default"
                           ? const Stack(
-                        children: [
-                          CircleAvatar(
-                            radius: 40,
-                            backgroundColor: bgColor,
-                          ),
-                          Center(
-                            child: Icon(
-                              Icons.cyclone_sharp,
-                              size: 32,
-                              color: Colors.red,
-                            ),
-                          ),
-                        ],
-                      )
+                              children: [
+                                CircleAvatar(
+                                  radius: 40,
+                                  backgroundColor: bgColor,
+                                ),
+                                Center(
+                                  child: Icon(
+                                    Icons.cyclone_sharp,
+                                    size: 32,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ],
+                            )
                           : null,
                     ),
                   ),
@@ -217,7 +226,6 @@ class GlitterPainter extends CustomPainter {
       Colors.deepPurple,
       Colors.lightGreen,
     ];
-
 
     for (int i = 0; i < 100; i++) {
       final angle = random.nextDouble() * 2 * pi;
