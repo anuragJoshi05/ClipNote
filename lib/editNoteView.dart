@@ -8,7 +8,8 @@ class EditNoteView extends StatefulWidget {
   final Note note;
   final String? backgroundImage;
 
-  const EditNoteView({required this.note, this.backgroundImage, Key? key}) : super(key: key);
+  const EditNoteView({required this.note, this.backgroundImage, Key? key})
+      : super(key: key);
 
   @override
   _EditNoteViewState createState() => _EditNoteViewState();
@@ -37,7 +38,7 @@ class _EditNoteViewState extends State<EditNoteView> {
     await NotesDatabase.instance.updateNote(updatedNote);
     await FireDB().updateNoteFirestore(updatedNote);
 
-    Navigator.pop(context, updatedNote);  // Pass the updated note back
+    Navigator.pop(context, updatedNote); // Pass the updated note back
   }
 
   @override
@@ -70,7 +71,8 @@ class _EditNoteViewState extends State<EditNoteView> {
                 child: SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
                   child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 15, vertical: 10),
                     child: Column(
                       children: [
                         TextField(
