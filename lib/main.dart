@@ -57,7 +57,9 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: isLogIn ? Home() : Login(), // Show Home if logged in, else Login
+      home: isLogIn
+          ? const Home()
+          : const Login(), // Show Home if logged in, else Login
     );
   }
 }
