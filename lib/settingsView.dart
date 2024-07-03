@@ -14,17 +14,17 @@ class _SettingsviewState extends State<Settingsview> {
     return Scaffold(
       backgroundColor: bgColor,
       appBar: AppBar(
-        iconTheme: IconThemeData(color: white),
+        iconTheme: const IconThemeData(color: white),
         backgroundColor: bgColor,
         elevation: 0.00,
-        title: Text(
+        title: const Text(
           "Settings",
           style: TextStyle(color: white, fontWeight: FontWeight.bold),
         ),
       ),
       body: Container(
-        padding: EdgeInsets.all(20),
-        child: Column(
+        padding: const EdgeInsets.all(20),
+        child: const Column(
           children: [
             // Other settings options if any
           ],
