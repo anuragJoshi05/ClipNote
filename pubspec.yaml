@@ -89,6 +89,9 @@ flutter:
    - images/bg8.jpg
    - images/bg9.jpg
    - images/bg10.jpg
+   - images/bg11.jpg
+   - images/bg12.jpg
+   - images/appBackground.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
