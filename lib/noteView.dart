@@ -18,7 +18,8 @@ class NoteView extends StatefulWidget {
   State<NoteView> createState() => _NoteViewState();
 }
 
-class _NoteViewState extends State<NoteView> with SingleTickerProviderStateMixin {
+class _NoteViewState extends State<NoteView>
+    with SingleTickerProviderStateMixin {
   late Note _note;
   late AnimationController _controller;
   late Animation<double> _animation;
@@ -118,7 +119,9 @@ class _NoteViewState extends State<NoteView> with SingleTickerProviderStateMixin
 
     final updatedNote = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => EditNoteView(note: _note, backgroundImage: _backgroundImage)),
+      MaterialPageRoute(
+          builder: (context) =>
+              EditNoteView(note: _note, backgroundImage: _backgroundImage)),
     );
     if (updatedNote != null) {
       setState(() {
@@ -133,7 +136,6 @@ class _NoteViewState extends State<NoteView> with SingleTickerProviderStateMixin
     }
   }
 
-
   Future<void> _changeBackground() async {
     final selectedBackground = await showModalBottomSheet<String>(
       context: context,
@@ -146,7 +148,8 @@ class _NoteViewState extends State<NoteView> with SingleTickerProviderStateMixin
 
     if (selectedBackground != null) {
       setState(() {
-        _backgroundImage = selectedBackground == "default" ? "" : selectedBackground;
+        _backgroundImage =
+            selectedBackground == "default" ? "" : selectedBackground;
       });
 
       final updatedNote = _note.copy(backgroundImage: _backgroundImage);
@@ -159,7 +162,9 @@ class _NoteViewState extends State<NoteView> with SingleTickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _backgroundImage == null || _backgroundImage!.isEmpty ? bgColor : null,
+      backgroundColor: _backgroundImage == null || _backgroundImage!.isEmpty
+          ? bgColor
+          : null,
       body: Stack(
         children: [
           if (_backgroundImage != null && _backgroundImage!.isNotEmpty)
@@ -178,7 +183,7 @@ class _NoteViewState extends State<NoteView> with SingleTickerProviderStateMixin
                 actions: [
                   IconButton(
                     icon:
-                    const Icon(Icons.delete_forever_outlined, color: white),
+                        const Icon(Icons.delete_forever_outlined, color: white),
                     onPressed: _deleteNote,
                   ),
                   ScaleTransition(
