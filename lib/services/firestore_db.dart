@@ -1,10 +1,10 @@
-import 'package:clipnote/services/db.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:clipnote/model/myNoteModel.dart';
 
 class FireDB {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<void> createNewNoteFirestore(Note note) async {
     final User? currentUser = _auth.currentUser;
@@ -21,8 +21,8 @@ class FireDB {
         "CreatedAt": note.createdTime,
         "isArchieve": note.isArchieve,
         "pin": note.pin,
-        "backgroundImage": note.backgroundImage ?? "", // Set default value to ""
-
+        "backgroundImage":
+            note.backgroundImage ?? "", // Set default value to ""
       }).then((_) {
         print("Note added successfully");
       }).catchError((error) {
@@ -51,11 +51,21 @@ class FireDB {
           createdTime: note["CreatedAt"].toDate(),
           pin: note["pin"],
           isArchieve: note["isArchieve"],
-          backgroundImage: note["backgroundImage"], // Handle the backgroundImage field
+          backgroundImage:
+              note["backgroundImage"], // Handle the backgroundImage field
         ));
       });
     }
     return notesList;
+  }
+
+  Future<String> getCurrentUserEmail() async {
+    final User? user = _auth.currentUser;
+    if (user != null) {
+      return user.email!;
+    } else {
+      throw Exception('No user logged in');
+    }
   }
 
   Future<void> updateNoteFirestore(Note note) async {
