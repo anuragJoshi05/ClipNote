@@ -10,7 +10,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart'; // For FontAwes
 import 'package:url_launcher/url_launcher.dart'; // For launching URLs
 
 class Login extends StatefulWidget {
-  final bool autoSignIn; // Add this parameter
+  final bool autoSignIn;
 
   const Login({Key? key, this.autoSignIn = false}) : super(key: key);
 
@@ -63,83 +63,115 @@ class _LoginState extends State<Login> {
         return true;
       },
       child: Scaffold(
-        backgroundColor: Colors.black87,
-        appBar: AppBar(
-          automaticallyImplyLeading: false, // Hide back button on AppBar
-          title: const Row(
-            children: [
-              Icon(Icons.lock_open, color: Colors.white),
-              SizedBox(width: 10),
-              Text(
-                "Login to ClipNote",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
+        body: Stack(
+          children: [
+            // Background image
+            Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("images/appBackground.png"),
+                  fit: BoxFit.cover,
                 ),
               ),
-            ],
-          ),
-          backgroundColor: Colors.black87,
-          elevation: 0,
-        ),
-        body: Column(
-          children: [
-            const SizedBox(
-                height: 50), // Add spacing between the AppBar and content
-            const Text(
-              'Welcome to ClipNote',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
             ),
-            const SizedBox(height: 20),
-            SignInButton(
-              Buttons.google,
-              text: "Sign in with Google",
-              onPressed: () async {
-                await signInWithGoogle();
-                final User? currentUser = await _auth.currentUser;
-                LocalDataSaver.saveLoginData(true);
-                LocalDataSaver.saveImg(currentUser!.photoURL.toString());
-                LocalDataSaver.saveMail(currentUser.email.toString());
-                LocalDataSaver.saveName(currentUser.displayName.toString());
-                LocalDataSaver.saveSyncSet(false);
-                await FireDB()
-                    .getAllStoredNotesForUser(currentUser.email.toString());
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => const Home()));
-              },
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              elevation: 5,
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-              clipBehavior: Clip.antiAlias,
+            Container(
+              color: Colors.black.withOpacity(0.6), // Dark overlay
             ),
-            const SizedBox(height: 20),
-            const Spacer(), // Pushes the following Row to the bottom
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
-              child: Row(
+            Center(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Text(
-                    'Created by Anurag Joshi',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
+                  const SizedBox(height: 100),
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.note_alt_outlined,
+                        color: Colors.green,
+                        size: 40,
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Text(
+                        'ClipNote',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                          shadows: [
+                            Shadow(
+                              blurRadius: 10.0,
+                              color: Colors.black45,
+                              offset: Offset(2.0, 2.0),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 5),
-                  GestureDetector(
-                    onTap: () => _launchURL('https://github.com/anuragJoshi05'),
-                    child: const Icon(
-                      FontAwesomeIcons.github,
-                      color: Colors.white,
+                  const SizedBox(height: 50),
+                  SignInButton(
+                    Buttons.google,
+                    text: "Sign in with Google",
+                    onPressed: () async {
+                      await signInWithGoogle();
+                      final User? currentUser = await _auth.currentUser;
+                      LocalDataSaver.saveLoginData(true);
+                      LocalDataSaver.saveImg(currentUser!.photoURL.toString());
+                      LocalDataSaver.saveMail(currentUser.email.toString());
+                      LocalDataSaver.saveName(
+                          currentUser.displayName.toString());
+                      LocalDataSaver.saveSyncSet(false);
+                      await FireDB().getAllStoredNotesForUser(
+                          currentUser.email.toString());
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const Home()));
+                    },
+                    shape: RoundedRectangleBorder(
+                      side: const BorderSide(color: Colors.black, width: 1),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    elevation: 5,
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 20),
+                    clipBehavior: Clip.antiAlias,
+                  ),
+                  const SizedBox(height: 100),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'Created by Anurag Joshi',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            shadows: [
+                              Shadow(
+                                blurRadius: 5.0,
+                                color: Colors.black45,
+                                offset: Offset(1.0, 1.0),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        GestureDetector(
+                          onTap: () =>
+                              _launchURL('https://github.com/anuragJoshi05'),
+                          child: const Icon(
+                            FontAwesomeIcons.github,
+                            color: Colors.white,
+                            size: 18,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
