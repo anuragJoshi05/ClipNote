@@ -149,7 +149,7 @@ class _NoteViewState extends State<NoteView>
     if (selectedBackground != null) {
       setState(() {
         _backgroundImage =
-            selectedBackground == "default" ? "" : selectedBackground;
+        selectedBackground == "default" ? "" : selectedBackground;
       });
 
       final updatedNote = _note.copy(backgroundImage: _backgroundImage);
@@ -161,6 +161,9 @@ class _NoteViewState extends State<NoteView>
 
   @override
   Widget build(BuildContext context) {
+    final deviceHeight = MediaQuery.of(context).size.height;
+    final deviceWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       backgroundColor: _backgroundImage == null || _backgroundImage!.isEmpty
           ? bgColor
@@ -183,7 +186,7 @@ class _NoteViewState extends State<NoteView>
                 actions: [
                   IconButton(
                     icon:
-                        const Icon(Icons.delete_forever_outlined, color: white),
+                    const Icon(Icons.delete_forever_outlined, color: white),
                     onPressed: _deleteNote,
                   ),
                   ScaleTransition(
@@ -209,7 +212,7 @@ class _NoteViewState extends State<NoteView>
                 child: Stack(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.all(16.0),
+                      padding: EdgeInsets.all(deviceWidth * 0.04),
                       child: SingleChildScrollView(
                         physics: const BouncingScrollPhysics(),
                         child: Column(
@@ -217,31 +220,35 @@ class _NoteViewState extends State<NoteView>
                           children: [
                             Text(
                               "Created on ${DateFormat.yMMMMEEEEd().format(widget.note.createdTime)}",
-                              style: const TextStyle(
+                              style: TextStyle(
+                                fontSize: deviceWidth * 0.04,
                                 color: white,
                               ),
+                              textAlign: TextAlign.left,
                             ),
-                            const SizedBox(
-                              height: 10,
+                            SizedBox(
+                              height: deviceHeight * 0.01,
                             ),
                             Text(
                               _note.title,
-                              style: const TextStyle(
-                                  fontSize: 25,
+                              style: TextStyle(
+                                  fontSize: deviceWidth * 0.07,
                                   color: white,
                                   fontWeight: FontWeight.bold),
                               overflow: TextOverflow.ellipsis,
                               maxLines: 2,
+                              textAlign: TextAlign.left,
                             ),
-                            const SizedBox(
-                              height: 20,
+                            SizedBox(
+                              height: deviceHeight * 0.02,
                             ),
                             Text(
                               _note.content,
-                              style: const TextStyle(
-                                fontSize: 17,
+                              style: TextStyle(
+                                fontSize: deviceWidth * 0.05,
                                 color: white,
                               ),
+                              textAlign: TextAlign.left,
                             ),
                           ],
                         ),

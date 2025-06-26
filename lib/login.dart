@@ -164,7 +164,7 @@ class _LoginState extends State<Login> {
                         const SizedBox(width: 10),
                         GestureDetector(
                           onTap: () =>
-                              _launchURL('https://github.com/anuragJoshi05'),
+                              _launchURL('https://github.com/anuragjoshi05'),
                           child: const Icon(
                             FontAwesomeIcons.github,
                             color: Colors.white,
