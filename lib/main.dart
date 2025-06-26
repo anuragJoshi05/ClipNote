@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'home.dart';
 import 'login.dart';
 import 'services/loginInfo.dart';
 
-void main() async {
-  WidgetsFlutterBinding
-      .ensureInitialized(); // Ensures Flutter is initialized before Firebase
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-  // Initializing the Firebase app with FirebaseOptions
+  // 🔐 Load the .env file before anything else
+  await dotenv.load(fileName: ".env");
+
+  // 🚀 Initialize Firebase
   await Firebase.initializeApp(
     options: const FirebaseOptions(
       apiKey: 'AIzaSyC-nyNMs-iCwqpet-1GaEjbgXBNjBumMcw',
@@ -19,7 +22,7 @@ void main() async {
     ),
   );
 
-  runApp(MyApp()); // Runs the Flutter application
+  runApp(MyApp());
 }
 
 class MyApp extends StatefulWidget {
@@ -30,36 +33,26 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   bool isLogIn = false;
 
-  // Function to get logged-in state
   getLoggedInState() async {
     bool? loggedInState = await LocalDataSaver.getLogData();
-    await LocalDataSaver.getLogData().then((value) {
-      setState(() {
-        isLogIn = value.toString() == "null";
-      });
-    });
     setState(() {
-      isLogIn = loggedInState ?? false; // Default to false if the value is null
+      isLogIn = loggedInState ?? false;
     });
   }
 
   @override
   void initState() {
     super.initState();
-    getLoggedInState(); // Check login state when the app starts
+    getLoggedInState();
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: isLogIn
-          ? const Home()
-          : const Login(), // Show Home if logged in, else Login
+      title: 'ClipNote',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: isLogIn ? const Home() : const Login(),
     );
   }
 }

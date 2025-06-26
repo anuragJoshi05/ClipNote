@@ -1,63 +1,59 @@
 import 'dart:math';
 import 'package:clipnote/colors.dart';
 import 'package:clipnote/services/account_switcher.dart';
-import 'package:clipnote/services/auth.dart';
 import 'package:clipnote/services/firestore_db.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:clipnote/noteView.dart';
 import 'package:clipnote/createNoteView.dart';
 import 'package:clipnote/model/myNoteModel.dart';
 import 'package:clipnote/searchPage.dart';
 import 'package:clipnote/services/loginInfo.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:clipnote/home.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class ArchieveView extends StatefulWidget {
   const ArchieveView({super.key});
-
   @override
   State<ArchieveView> createState() => _ArchieveViewState();
 }
 
 class _ArchieveViewState extends State<ArchieveView> {
-  Future<List<GoogleSignInAccount>> getGoogleAccounts() async {
-    try {
-      await googleSignIn
-          .signInSilently(); // Attempt to sign in silently to retrieve accounts
-      return googleSignIn.currentUser != null
-          ? [googleSignIn.currentUser!]
-          : [];
-    } catch (error) {
-      print(error);
-      return [];
-    }
-  }
-
-  bool isLoading = true;
   bool isStaggered = true;
-  late List<Note> notesList = [];
-  late String? imgUrl;
+  bool isLoading = true;
+  List<Note> notesList = [];
+  String? imgUrl;
+  final ScrollController _scrollController = ScrollController();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   final List<Color> borderColors = [
-    Colors.red.withOpacity(0.5),
-    Colors.green.withOpacity(0.5),
-    Colors.blue.withOpacity(0.5),
-    Colors.yellow.withOpacity(0.5),
-    Colors.orange.withOpacity(0.5),
-    Colors.purple.withOpacity(0.5),
-    Colors.pink.withOpacity(0.5),
-    Colors.teal.withOpacity(0.5),
-    Colors.indigo.withOpacity(0.5),
-    Colors.cyan.withOpacity(0.5),
-    Colors.amber.withOpacity(0.5),
-    Colors.lime.withOpacity(0.5),
-    Colors.brown.withOpacity(0.5),
-    Colors.grey.withOpacity(0.5),
+    Colors.red.withOpacity(0.6),
+    Colors.green.withOpacity(0.6),
+    Colors.blue.withOpacity(0.6),
+    Colors.yellow.withOpacity(0.6),
+    Colors.orange.withOpacity(0.6),
+    Colors.purple.withOpacity(0.6),
+    Colors.pink.withOpacity(0.6),
+    Colors.teal.withOpacity(0.6),
+    Colors.indigo.withOpacity(0.6),
+    Colors.cyan.withOpacity(0.6),
+    Colors.amber.withOpacity(0.6),
+    Colors.lime.withOpacity(0.6),
+    Colors.brown.withOpacity(0.6),
+    Colors.grey.withOpacity(0.6),
   ];
 
-  Future<void> getAllArchievedNotes() async {
+  @override
+  void initState() {
+    super.initState();
+    _loadUserImage();
+    _getArchivedNotes();
+  }
+
+  void _loadUserImage() {
     LocalDataSaver.getImg().then((value) {
       if (mounted) {
         setState(() {
@@ -65,432 +61,377 @@ class _ArchieveViewState extends State<ArchieveView> {
         });
       }
     });
+  }
 
-    // Fetch archived notes from Firestore
-    final userEmail = FirebaseAuth.instance.currentUser?.email;
-    if (userEmail != null) {
-      notesList = await FireDB().getAllStoredNotesForUser(userEmail);
-      notesList = notesList.where((note) => note.isArchieve).toList();
-    }
-
-    if (mounted) {
+  Future<void> _getArchivedNotes() async {
+    final user = await LoginInfo().getCurrentUser();
+    if (user?.email != null) {
+      final allNotes = await FireDB().getAllStoredNotesForUser(user!.email!);
+      final archivedNotes = allNotes.where((note) => note.isArchieve).toList();
       setState(() {
+        notesList = archivedNotes;
         isLoading = false;
       });
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    getAllArchievedNotes();
+  Future<List<GoogleSignInAccount>> _getGoogleAccounts() async {
+    try {
+      await _googleSignIn.signInSilently();
+      return _googleSignIn.currentUser != null ? [_googleSignIn.currentUser!] : [];
+    } catch (_) {
+      return [];
+    }
   }
 
-  Future<bool> _onWillPop() async {
-    Navigator.pushReplacement(
+  void _toggleView() {
+    HapticFeedback.selectionClick();
+    setState(() {
+      isStaggered = !isStaggered;
+    });
+  }
+
+  Future<void> _navigateToCreateNote() async {
+    HapticFeedback.mediumImpact();
+    await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const Home()),
+      MaterialPageRoute(builder: (context) => const CreateNoteview()),
     );
-    return false;
+    await _getArchivedNotes();
+  }
+
+  Future<void> _navigateToNoteView(int index) async {
+    HapticFeedback.selectionClick();
+    final updatedNote = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => NoteView(
+          note: notesList[index],
+          onNoteUpdated: (Note updatedNote) {
+            setState(() {
+              notesList[index] = updatedNote;
+            });
+          },
+        ),
+      ),
+    );
+    if (updatedNote != null || mounted) {
+      await _getArchivedNotes();
+    }
+  }
+
+  void _navigateToSearch() {
+    HapticFeedback.lightImpact();
+    Navigator.push(context, MaterialPageRoute(builder: (_) => const SearchPage()));
+  }
+
+  void _showAccountSwitcher() async {
+    HapticFeedback.lightImpact();
+    final accounts = await _getGoogleAccounts();
+    if (!mounted) return;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => AccountSwitcher(accounts: accounts),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: _onWillPop,
-      child: isLoading
-          ? const Scaffold(
-              backgroundColor: bgColor,
-              body: Center(
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                ),
-              ),
-            )
-          : Scaffold(
-              floatingActionButton: FloatingActionButton(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                onPressed: () async {
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const CreateNoteview(),
-                    ),
-                  );
-                  await getAllArchievedNotes(); // Update the list after returning from CreateNoteView
-                },
-                backgroundColor:
-                    Colors.amber, // Set your desired background color here
-                elevation: 4, // Adjust the elevation for a subtle shadow
-                child: const Icon(
-                  Icons.add,
-                  color: Colors.white,
-                  size: 32,
-                ),
-              ),
-              backgroundColor: bgColor,
-              body: SafeArea(
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  child: Column(
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 10),
-                        width: MediaQuery.of(context).size.width,
-                        height: 55,
-                        decoration: BoxDecoration(
-                          color: cardColor,
-                          borderRadius: BorderRadius.circular(25),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
-                              spreadRadius: 1,
-                              blurRadius: 3,
-                            ),
-                          ],
-                          border: Border.all(
-                            color: Colors.grey
-                                .withOpacity(0.5), // Add greyish white border
-                            width: 1,
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Row(
-                                children: [
-                                  IconButton(
-                                    onPressed: () {
-                                      Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const Home()));
-                                    },
-                                    icon: const Icon(
-                                      Icons.arrow_back_outlined,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                const SearchPage(),
-                                          ),
-                                        );
-                                      },
-                                      child: Container(
-                                        height: 40,
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 15),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white70,
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                          border: Border.all(
-                                            color: Colors.grey.withOpacity(
-                                                0.5), // Add greyish white border
-                                            width: 1,
-                                          ),
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            Icon(
-                                              Icons.search,
-                                              color: Colors.grey[600],
-                                            ),
-                                            const SizedBox(width: 10),
-                                            Flexible(
-                                              child: Text(
-                                                "Search notes",
-                                                overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(
-                                                  color: Colors.grey[600],
-                                                  fontSize: 16,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Row(
-                              children: [
-                                TextButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      isStaggered = !isStaggered;
-                                    });
-                                  },
-                                  style: ButtonStyle(
-                                    overlayColor:
-                                        MaterialStateProperty.resolveWith(
-                                      (states) => Colors.white.withOpacity(0.1),
-                                    ),
-                                    shape: MaterialStateProperty.all<
-                                        RoundedRectangleBorder>(
-                                      RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(50.0),
-                                      ),
-                                    ),
-                                  ),
-                                  child: Icon(
-                                    isStaggered ? Icons.list : Icons.grid_view,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                const SizedBox(width: 9),
-                                Container(
-                                  margin: const EdgeInsets.symmetric(
-                                      horizontal: 10),
-                                  child: InkWell(
-                                    onTap: () async {
-                                      final List<GoogleSignInAccount> accounts =
-                                          await getGoogleAccounts();
-
-                                      showModalBottomSheet(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return AccountSwitcher(
-                                              accounts: accounts);
-                                        },
-                                      );
-                                    },
-                                    child: CircleAvatar(
-                                      radius: 16,
-                                      backgroundImage: imgUrl != null
-                                          ? NetworkImage(imgUrl!)
-                                          : Image.asset('images/googleLogo.png')
-                                              .image,
-                                      backgroundColor: Colors.grey,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        alignment: Alignment.centerLeft,
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 25, vertical: 10),
-                        child: Text(
-                          "STARRED",
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.5),
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      if (notesList.isEmpty)
-                        Container(
-                          margin: const EdgeInsets.symmetric(vertical: 20),
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            color: cardColor,
-                            borderRadius: BorderRadius.circular(15),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
-                                spreadRadius: 1,
-                                blurRadius: 3,
-                              ),
-                            ],
-                            border: Border.all(
-                              color: Colors.grey
-                                  .withOpacity(0.5), // Add greyish white border
-                              width: 1,
-                            ),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(
-                                Icons.star_border_outlined,
-                                color: Colors.orange,
-                                size: 50,
-                              ),
-                              const SizedBox(height: 15),
-                              Text(
-                                "No Starred Notes",
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.9),
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              Text(
-                                "Your starred notes will appear here.",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.6),
-                                  fontSize: 16,
-                                ),
-                              ),
-                              const SizedBox(height: 20),
-                              ElevatedButton.icon(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const Home(),
-                                    ),
-                                  );
-                                  // Add your logic to navigate to the notes section or create a note
-                                },
-                                icon:
-                                    const Icon(Icons.add, color: Colors.white),
-                                label: const Text(
-                                  "Go to Notes",
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.orange,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30.0),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      if (notesList.isNotEmpty)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 15),
-                          child: isStaggered
-                              ? MasonryGridView.count(
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  shrinkWrap: true,
-                                  crossAxisCount: 2,
-                                  mainAxisSpacing: 12,
-                                  crossAxisSpacing: 12,
-                                  itemCount: notesList.length,
-                                  itemBuilder: (context, index) {
-                                    return _buildNoteItem(context, index);
-                                  },
-                                )
-                              : ListView.builder(
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  shrinkWrap: true,
-                                  itemCount: notesList.length,
-                                  itemBuilder: (context, index) {
-                                    return _buildNoteItem(context, index);
-                                  },
-                                ),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
+    return Scaffold(
+      key: _scaffoldKey,
+      backgroundColor: bgColor,
+      floatingActionButton: FloatingActionButton(
+        onPressed: _navigateToCreateNote,
+        backgroundColor: Colors.orangeAccent,
+        foregroundColor: Colors.white,
+        elevation: 6,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: const Icon(Icons.add, size: 28),
+      ),
+      body: SafeArea(
+        child: isLoading
+            ? const Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.orangeAccent),
+            strokeWidth: 3,
+          ),
+        )
+            : RefreshIndicator(
+          onRefresh: _getArchivedNotes,
+          backgroundColor: cardColor,
+          color: Colors.orangeAccent,
+          strokeWidth: 2.5,
+          child: CustomScrollView(
+            controller: _scrollController,
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
             ),
+            slivers: [
+              SliverToBoxAdapter(child: _buildHeader()),
+              SliverToBoxAdapter(child: _buildSectionTitle()),
+              _buildNotesGrid(),
+              const SliverToBoxAdapter(child: SizedBox(height: 100)),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
-  Widget _buildNoteItem(BuildContext context, int index) {
+  Widget _buildHeader() {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      height: 56,
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+        border: Border.all(color: Colors.grey.withOpacity(0.2)),
+      ),
+      child: Row(
+        children: [
+          IconButton(
+            onPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const Home())),
+            icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+            splashRadius: 24,
+          ),
+          Expanded(
+            child: GestureDetector(
+              onTap: _navigateToSearch,
+              child: Container(
+                height: 40,
+                margin: const EdgeInsets.symmetric(horizontal: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.search, color: Colors.grey[400], size: 20),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Search notes',
+                      style: TextStyle(
+                        color: Colors.grey[400],
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          IconButton(
+            onPressed: _toggleView,
+            icon: Icon(
+              isStaggered ? Icons.view_list : Icons.grid_view,
+              color: Colors.white,
+            ),
+            splashRadius: 24,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: GestureDetector(
+              onTap: _showAccountSwitcher,
+              child: CircleAvatar(
+                radius: 18,
+                backgroundColor: Colors.grey[700],
+                backgroundImage: imgUrl != null ? NetworkImage(imgUrl!) : null,
+                child: imgUrl == null
+                    ? const Icon(Icons.person, color: Colors.white, size: 20)
+                    : null,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'ARCHIVED',
+            style: TextStyle(
+              color: Colors.white.withOpacity(0.6),
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 1,
+            ),
+          ),
+          if (notesList.isNotEmpty)
+            Text(
+              '${notesList.length} notes',
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.4),
+                fontSize: 12,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNotesGrid() {
+    if (notesList.isEmpty) {
+      return SliverFillRemaining(
+        hasScrollBody: false,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: Colors.orangeAccent.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.archive_outlined,
+                  size: 40,
+                  color: Colors.orangeAccent,
+                ),
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'No archived notes',
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 16,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      sliver: isStaggered
+          ? SliverMasonryGrid.count(
+        crossAxisCount: 2,
+        mainAxisSpacing: 12,
+        crossAxisSpacing: 12,
+        childCount: notesList.length,
+        itemBuilder: (context, index) => _buildNoteCard(index),
+      )
+          : SliverList(
+        delegate: SliverChildBuilderDelegate(
+              (context, index) => Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: _buildNoteCard(index),
+          ),
+          childCount: notesList.length,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNoteCard(int index) {
     final note = notesList[index];
-    final borderColor = borderColors[Random().nextInt(borderColors.length)];
+    final borderColor = borderColors[note.id.hashCode % borderColors.length];
 
     return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onTap: () async {
-        final updatedNote = await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => NoteView(
-              note: notesList[index],
-              onNoteUpdated: (Note updatedNote) {
-                setState(() {
-                  notesList[index] = updatedNote;
-                });
-              },
-            ),
-          ),
-        );
-        if (updatedNote != null) {
-          await getAllArchievedNotes(); // Fetch notes from Firestore after returning from NoteView
-        }
-      },
+      onTap: () => _navigateToNoteView(index),
       child: Stack(
-        clipBehavior: Clip.none, // Allow the pin to overflow the container
+        clipBehavior: Clip.none,
         children: [
           Container(
-            margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-            padding: const EdgeInsets.all(10.0),
+            width: double.infinity,
             decoration: BoxDecoration(
               color: cardColor,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: borderColor, width: 1),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  spreadRadius: 1,
-                  blurRadius: 3,
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
                 ),
               ],
-              border: Border.all(
-                color: borderColor, // Apply random border color
-                width: 1,
-              ),
-              image: note.backgroundImage != null &&
-                      note.backgroundImage!.isNotEmpty
+              image: note.backgroundImage != null && note.backgroundImage!.isNotEmpty
                   ? DecorationImage(
-                      image: AssetImage(note.backgroundImage!),
-                      fit: BoxFit.cover,
-                    )
+                image: AssetImage(note.backgroundImage!),
+                fit: BoxFit.cover,
+                colorFilter: ColorFilter.mode(
+                  Colors.black.withOpacity(0.3),
+                  BlendMode.darken,
+                ),
+              )
                   : null,
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  notesList[index].title,
-                  style: const TextStyle(
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 10.0),
-                Text(
-                  notesList[index].content.length > 250
-                      ? notesList[index].content.substring(0, 250)
-                      : notesList[index].content,
-                  style: const TextStyle(
-                    fontSize: 14.0,
-                    color: Colors.white,
-                  ),
-                ),
-              ],
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (note.title.isNotEmpty) ...[
+                    Text(
+                      note.title,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                  if (note.content.isNotEmpty)
+                    Text(
+                      note.content,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.white.withOpacity(0.9),
+                        height: 1.4,
+                      ),
+                      maxLines: isStaggered ? 10 : 4,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                ],
+              ),
             ),
           ),
-          if (notesList[index].pin)
+          if (note.pin)
             Positioned(
-              top: -10, // Adjust the top position for a 3D effect
-              right: -10, // Adjust the right position for a 3D effect
+              top: -6,
+              right: -6,
               child: Transform.rotate(
-                angle: 0.6, // Rotate the pin for a more realistic effect
-                child: Icon(
-                  Icons.push_pin,
-                  color: Colors.orangeAccent, // Adjust the color as needed
-                  size: 30, // Adjust the size as needed
+                angle: 0.5,
+                child: Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: const BoxDecoration(
+                    color: Colors.orangeAccent,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 4,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.push_pin,
+                    color: Colors.white,
+                    size: 16,
+                  ),
                 ),
               ),
             ),
