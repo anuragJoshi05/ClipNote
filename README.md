@@ -94,7 +94,7 @@ Automatically creates a new note with tasks, motivation, plan, and weather.
 ### 🔐 Firebase Auth & 🔎 Firestore Storage View  
 How ClipNote handles sign-in and how each note is stored as key:value pairs.
 
-<img src="screenshots/25.png" width="300"/> <img src="screenshots/26.png" width="300"/>
+<img src="screenshots/25.png" width="500"/> <img src="screenshots/26.png" width="500"/>
 
 ---
 
