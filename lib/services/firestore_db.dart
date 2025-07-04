@@ -21,8 +21,9 @@ class FireDB {
         "CreatedAt": note.createdTime,
         "isArchieve": note.isArchieve,
         "pin": note.pin,
-        "backgroundImage":
-            note.backgroundImage ?? "", // Set default value to ""
+        "backgroundImage": note.backgroundImage ?? "",
+        "summary": note.summary ?? "",
+        "type": note.title.contains("Daily Note") ? "daily" : "regular", // <-- merged logic
       }).then((_) {
         print("Note added successfully");
       }).catchError((error) {
@@ -51,8 +52,8 @@ class FireDB {
           createdTime: note["CreatedAt"].toDate(),
           pin: note["pin"],
           isArchieve: note["isArchieve"],
-          backgroundImage:
-              note["backgroundImage"], // Handle the backgroundImage field
+          backgroundImage: note["backgroundImage"],
+          summary: note["summary"],
         ));
       });
     }
@@ -89,7 +90,9 @@ class FireDB {
         "Content": note.content,
         "isArchieve": note.isArchieve,
         "pin": note.pin,
-        "backgroundImage": note.backgroundImage, // New field
+        "backgroundImage": note.backgroundImage,
+        "summary": note.summary ?? "",
+        "type": note.title.contains("Daily Note") ? "daily" : "regular", // Optional: update type too
       }).then((_) {
         print("Note updated successfully");
       }).catchError((error) {

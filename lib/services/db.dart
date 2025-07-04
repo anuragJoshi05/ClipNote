@@ -5,14 +5,12 @@ import 'package:clipnote/model/myNoteModel.dart';
 
 class NotesDatabase {
   static final NotesDatabase instance = NotesDatabase._init();
-
   static Database? _database;
 
   NotesDatabase._init();
 
   Future<Database> get database async {
     if (_database != null) return _database!;
-
     _database = await _initDB('notes.db');
     return _database!;
   }
@@ -23,7 +21,7 @@ class NotesDatabase {
 
     return await openDatabase(
       path,
-      version: 3, // Ensure version is 3 to trigger the onUpgrade
+      version: 4, // updated for summary field
       onCreate: _createDB,
       onUpgrade: _upgradeDB,
     );
@@ -44,7 +42,8 @@ class NotesDatabase {
       ${NoteFields.title} $textType,
       ${NoteFields.content} $textType,
       ${NoteFields.createdTime} $textType,
-      ${NoteFields.backgroundImage} $nullableTextType
+      ${NoteFields.backgroundImage} $nullableTextType,
+      ${NoteFields.summary} $nullableTextType
     )
     ''');
   }
@@ -58,11 +57,14 @@ class NotesDatabase {
       await db.execute(
           'ALTER TABLE $tableNotes ADD COLUMN ${NoteFields.backgroundImage} TEXT');
     }
+    if (oldVersion < 4) {
+      await db.execute(
+          'ALTER TABLE $tableNotes ADD COLUMN ${NoteFields.summary} TEXT');
+    }
   }
 
   Future<Note> insertEntry(Note note) async {
     final db = await instance.database;
-
     final id = await db.insert(tableNotes, note.toJson());
     await FireDB().createNewNoteFirestore(note);
     return note.copy(id: id);
@@ -167,13 +169,11 @@ class NotesDatabase {
 
   Future<void> clearDatabase() async {
     final db = await instance.database;
-
     await db.delete(tableNotes);
   }
 
   Future close() async {
     final db = await instance.database;
-
     db.close();
   }
 }

@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'home.dart';
-import 'login.dart';
-import 'services/loginInfo.dart';
+
+import 'views/home.dart';
+import 'views/login.dart';
+import 'package:clipnote/services/loginInfo.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 🔐 Load the .env file before anything else
+  // 🔐 Load .env
   await dotenv.load(fileName: ".env");
 
   // 🚀 Initialize Firebase
@@ -51,7 +52,23 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'ClipNote',
-      theme: ThemeData(primarySwatch: Colors.blue),
+      theme: ThemeData(
+        textTheme: TextTheme(
+          bodyMedium: TextStyle(
+            fontSize: 16,
+            fontFamilyFallback: [
+              'Noto Color Emoji',
+              'Apple Color Emoji',
+              'Segoe UI Emoji',
+            ],
+          ),
+        ),
+      ),
+      routes: {
+        '/home': (context) => const Home(),
+      },
+
+      // 🏁 Initial screen
       home: isLogIn ? const Home() : const Login(),
     );
   }
