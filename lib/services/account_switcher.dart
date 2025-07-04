@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:clipnote/login.dart';
+import 'package:clipnote/views/login.dart';
 import 'package:clipnote/services/auth.dart';
 
 class AccountSwitcher extends StatefulWidget {

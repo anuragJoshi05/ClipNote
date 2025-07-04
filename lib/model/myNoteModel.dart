@@ -7,6 +7,7 @@ class Note {
   final String content;
   final DateTime createdTime;
   final String? backgroundImage; // New field
+  final String? summary;
 
   Note({
     this.id,
@@ -17,6 +18,7 @@ class Note {
     required this.content,
     required this.createdTime,
     this.backgroundImage = "", // Default value set to ""
+    this.summary,
   });
 
   Note copy({
@@ -27,7 +29,8 @@ class Note {
     String? uniqueID,
     String? content,
     DateTime? createdTime,
-    String? backgroundImage, // New parameter in copy method
+    String? backgroundImage,
+    String? summary,// New parameter in copy method
   }) {
     return Note(
       id: id ?? this.id,
@@ -38,7 +41,8 @@ class Note {
       uniqueID: uniqueID ?? this.uniqueID,
       createdTime: createdTime ?? this.createdTime,
       backgroundImage:
-          backgroundImage ?? this.backgroundImage, // Copy background image
+          backgroundImage ?? this.backgroundImage,
+      summary: summary ?? this.summary,// Copy background image
     );
   }
 
@@ -51,7 +55,8 @@ class Note {
       content: json[NoteFields.content] as String,
       uniqueID: json[NoteFields.uniqueID] as String,
       createdTime: DateTime.parse(json[NoteFields.createdTime] as String),
-      backgroundImage: json[NoteFields.backgroundImage] as String?, // From JSON
+      backgroundImage: json[NoteFields.backgroundImage] as String?,
+      summary: json[NoteFields.summary] as String?,// From JSON
     );
   }
 
@@ -64,7 +69,8 @@ class Note {
       NoteFields.content: content,
       NoteFields.uniqueID: uniqueID,
       NoteFields.createdTime: createdTime.toIso8601String(),
-      NoteFields.backgroundImage: backgroundImage, // To JSON
+      NoteFields.backgroundImage: backgroundImage,
+      NoteFields.summary: summary,// To JSON
     };
   }
 }
@@ -88,5 +94,6 @@ class NoteFields {
   static const String title = 'title';
   static const String content = 'content';
   static const String createdTime = 'createdTime';
-  static const String backgroundImage = 'backgroundImage'; // New constant
+  static const String backgroundImage = 'backgroundImage';
+  static const String summary = 'summary';// New constant
 }
