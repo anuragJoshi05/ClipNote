@@ -118,31 +118,31 @@ How ClipNote handles sign-in and how each note is stored as key:value pairs.
 ```bash
 lib/
 │
-├── model/
-│   └── myNoteModel.dart
+├── model/                        # Data models used across the app
+│   └── myNoteModel.dart          # Note model with fields and structure
 │
-├── services/
-│   ├── auth.dart
-│   ├── db.dart
-│   ├── firestore_db.dart
-│   ├── ai_service.dart
-│   ├── smart_daily_service.dart
-│   ├── account_switcher.dart
-│   └── loginInfo.dart
+├── services/                     # Backend and utility logic
+│   ├── auth.dart                 # Firebase Auth integration
+│   ├── db.dart                   # Local DB helpers (e.g., SQLite)
+│   ├── firestore_db.dart         # Firestore CRUD and syncing
+│   ├── ai_service.dart           # AI summary and Gemini API logic
+│   ├── smart_daily_service.dart  # Generates smart daily notes using AI, tasks, weather
+│   ├── account_switcher.dart     # Logic for switching accounts and resetting state
+│   └── loginInfo.dart            # Stores current login session info
 │
-├── views/
-│   ├── home.dart
-│   ├── createNoteView.dart
-│   ├── editNoteView.dart
-│   ├── noteView.dart
-│   ├── archieveView.dart
-│   ├── backgroundSwitcher.dart
-│   ├── SideMenuBar.dart
-│   ├── settingsView.dart
-│   ├── smart_daily_note_page.dart
-│   └── searchPage.dart
+├── views/                        # UI Screens
+│   ├── home.dart                 # Main notes dashboard (Keep-style)
+│   ├── createNoteView.dart       # New note creation screen
+│   ├── editNoteView.dart         # Editing existing notes
+│   ├── noteView.dart             # Full note view with options
+│   ├── archieveView.dart         # Archived notes display
+│   ├── backgroundSwitcher.dart   # Choose note background
+│   ├── SideMenuBar.dart          # Sidebar with navigation and settings
+│   ├── settingsView.dart         # App preferences and options
+│   ├── smart_dailynote_page.dart # Smart AI-powered daily planner
+│   └── searchPage.dart           # Search functionality across notes
 │
-└── main.dart
+└── main.dart                     # Entry point, Firebase setup, routing
 ```
 
 ## 💻 Run Locally
