@@ -9,7 +9,7 @@
 
 ## 📌 Overview
 
-**ClipNote** is a smart, personalized note-taking app built using **Flutter**, **Firebase**, **Gemini API**, and **OpenWeatherMap API**. It combines a modern UI with powerful features like AI-generated summaries, personalized planning, task extraction, and live weather — making it a complete productivity assistant.
+**ClipNote** is a smart, AI-powered note-taking app built with **Flutter**, **Firebase**, **Gemini API**, and **OpenWeatherMap API**. It blends a sleek, modern UI with intelligent features like AI-generated summaries, a dynamic **AI Dashboard** for personalized planning and task extraction, and real-time weather — making it a complete productivity companion.
 
 ---
 
