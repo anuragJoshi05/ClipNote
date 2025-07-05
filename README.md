@@ -13,6 +13,15 @@
 
 ---
 
+## 📲 Download APK
+
+🎉 **ClipNote v1.0 – First Public Release**  
+📱 [**Download APK (20MB)**](https://github.com/anuragJoshi05/clipnote/releases/download/v1.0.0/clipnote.apk)  
+✅ Optimized for modern Android (64-bit ARM) – no setup required  
+🚀 Just download, install, and start using ClipNote instantly.
+
+---
+
 ## 🚀 Key Features
 
 | Feature             | Description                                      |
